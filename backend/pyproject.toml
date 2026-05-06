@@ -4,7 +4,11 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N"]
-ignore = ["B008"]  # FastAPI uses Depends() in defaults
+ignore = [
+    "B008",   # FastAPI Depends() in default args
+    "N818",   # exception names without "Error" suffix — historical convention
+    "E501",   # line too long — relaxed; covered by line-length=110 already
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

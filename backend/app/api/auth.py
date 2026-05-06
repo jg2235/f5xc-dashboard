@@ -37,9 +37,9 @@ from app.auth.dependencies import csrf_protect, get_current_user
 from app.auth.providers import get_auth_provider
 from app.auth.revocation import revoke_jti
 from app.auth.security import (
-    decode_access_token,
     create_access_token,
     create_refresh_token,
+    decode_access_token,
     decode_refresh_token,
     generate_csrf_token,
 )

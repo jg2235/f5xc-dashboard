@@ -11,13 +11,14 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import delete
 
-# Import path follows the project convention seen elsewhere in the repo.
-# If your celery app instance lives at a different path, adjust the import.
-from app.workers.celery_app import celery_app  # type: ignore[attr-defined]
 from app.config import get_settings
 from app.db import SessionLocal  # type: ignore[attr-defined]
 from app.logging_config import get_logger
 from app.models import AuditEvent
+
+# Import path follows the project convention seen elsewhere in the repo.
+# If your celery app instance lives at a different path, adjust the import.
+from app.workers.celery_app import celery_app  # type: ignore[attr-defined]
 
 log = get_logger(__name__)
 

@@ -42,7 +42,8 @@ def sync_api_discovery_state() -> dict:
             ).scalars().all()
 
             # v0.8.0 — capture sync timestamp BEFORE any upserts.
-            from datetime import UTC, datetime as _dt
+            from datetime import UTC
+            from datetime import datetime as _dt
             sync_started_at = _dt.now(UTC)
 
             with F5XCClient(

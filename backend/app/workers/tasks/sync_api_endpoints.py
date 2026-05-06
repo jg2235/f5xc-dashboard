@@ -89,7 +89,8 @@ def sync_api_endpoints() -> dict:
             # ApiEndpoint model's `updated_at` is server-stamped via
             # onupdate=func.now() on every UPDATE, so this gives us a clean
             # boundary for the reap predicate.
-            from datetime import UTC, datetime as _dt
+            from datetime import UTC
+            from datetime import datetime as _dt
             sync_started_at = _dt.now(UTC)
 
             with F5XCClient(

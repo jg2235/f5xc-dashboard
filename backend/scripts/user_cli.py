@@ -35,14 +35,14 @@ from app.db import SessionLocal
 from app.logging_config import configure_logging
 from app.models import Tenant
 from app.services.users import (
-    DuplicateUsername,
-    LastActiveAdminError,
     ROLE_ADMIN,
     ROLE_VIEWER,
+    VALID_ROLES,
+    DuplicateUsername,
+    LastActiveAdminError,
     TenantNotFoundForAssignment,
     UserNotFound,
     UserServiceError,
-    VALID_ROLES,
     create_user,
     get_user,
     list_users,
@@ -50,7 +50,6 @@ from app.services.users import (
     set_password,
     set_role,
 )
-
 
 
 class TenantNotFound(Exception):

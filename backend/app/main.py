@@ -17,8 +17,8 @@ Wiring (top to bottom):
 """
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 import asyncio
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -119,7 +119,7 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
     if not settings.f5xc_mock:
         try:
             await asyncio.wait_for(_probe_f5xc_auth(), timeout=5.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning(
                 "f5xc_auth_probe_timeout",
                 tenant=settings.f5xc_tenant,

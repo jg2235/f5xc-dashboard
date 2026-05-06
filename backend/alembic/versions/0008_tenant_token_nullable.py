@@ -14,9 +14,9 @@ Also drops the empty-string default — NULL is the correct "no per-tenant
 override" sentinel; empty string conflated "explicitly no token" with
 "never set."
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "0008_tenant_token_nullable"
