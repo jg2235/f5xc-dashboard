@@ -62,8 +62,11 @@ export function Sidebar() {
     refetchInterval: 30_000,
   });
 
-  const logout = () => {
-    auth.clear();
+  const logout = async () => {
+    // v0.7.2 cookie auth: tell the server to revoke + clear cookies before
+    // navigating. Best-effort — api.logout() swallows network errors so
+    // the SPA always navigates regardless.
+    await auth.logout();
     router.push("/login");
   };
 

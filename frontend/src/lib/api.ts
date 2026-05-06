@@ -1,4 +1,7 @@
-// Thin fetch wrapper. Stores JWT in localStorage; sends Authorization: Bearer.
+// Thin fetch wrapper. Cookie-based auth (v0.7.2):
+//   - access/refresh/csrf cookies are httpOnly+Secure+SameSite=Strict
+//   - mutating requests echo the f5xc_csrf cookie value in X-CSRF-Token header
+//   - all fetches use credentials: "include" so cookies travel
 const BASE_URL = "/api/v1";
 
 // ---------------- Slice 1/2 types ----------------
@@ -549,18 +552,58 @@ export type AlertActionResult = {
 
 // ---------------- Auth + fetch wrapper ----------------
 
-const TOKEN_KEY = "f5xc_token";
+const CSRF_COOKIE_NAME = "f5xc_csrf";
+
+/**
+ * Read a cookie value by name. Returns null on the server (SSR) or if
+ * the cookie isn't set. The CSRF cookie is intentionally NOT httpOnly
+ * so the SPA can read it and echo it back in X-CSRF-Token headers.
+ */
+function readCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.split("=").slice(1).join("=")) : null;
+}
 
 export const auth = {
-  getToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(TOKEN_KEY);
+  /** Read the CSRF token from the f5xc_csrf cookie. */
+  getCsrfToken(): string | null {
+    return readCookie(CSRF_COOKIE_NAME);
   },
-  setToken(t: string) {
-    window.localStorage.setItem(TOKEN_KEY, t);
+
+  /**
+   * Verify session via /me. Returns the user if cookies are valid,
+   * null if not (401 or any other failure).
+   */
+  async refresh(): Promise<CurrentUser | null> {
+    try {
+      const resp = await fetch(`${BASE_URL}/auth/me`, {
+        credentials: "include",
+      });
+      if (!resp.ok) return null;
+      return (await resp.json()) as CurrentUser;
+    } catch {
+      return null;
+    }
   },
-  clear() {
-    window.localStorage.removeItem(TOKEN_KEY);
+
+  /**
+   * Tell the server to revoke + clear cookies. Best-effort — if the
+   * server is unreachable we still want the SPA to navigate to /login.
+   */
+  async logout(): Promise<void> {
+    const csrf = auth.getCsrfToken();
+    try {
+      await fetch(`${BASE_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: csrf ? { "X-CSRF-Token": csrf } : {},
+      });
+    } catch {
+      // server unreachable — proceed with client-side navigation anyway
+    }
   },
 };
 
@@ -570,16 +613,29 @@ class ApiError extends Error {
   }
 }
 
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
-  const token = auth.getToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  // Mutating requests need CSRF echo (double-submit cookie pattern).
+  const method = (init.method || "GET").toUpperCase();
+  if (MUTATING_METHODS.has(method)) {
+    const csrf = auth.getCsrfToken();
+    if (csrf) headers.set("X-CSRF-Token", csrf);
+  }
+
   if (!headers.has("Content-Type") && init.body && !(init.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const resp = await fetch(`${BASE_URL}${path}`, { ...init, headers });
+
+  const resp = await fetch(`${BASE_URL}${path}`, {
+    ...init,
+    headers,
+    credentials: "include", // ALWAYS send cookies
+  });
+
   if (resp.status === 401) {
-    auth.clear();
     if (typeof window !== "undefined" && window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
@@ -597,12 +653,13 @@ export const api = {
   login: async (
     username: string,
     password: string,
-  ): Promise<{ access_token: string; expires_in: number }> => {
+  ): Promise<{ user: CurrentUser }> => {
     const body = new URLSearchParams({ username, password });
     const resp = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
+      credentials: "include", // server sets cookies on success
     });
     if (!resp.ok) {
       throw new ApiError(
