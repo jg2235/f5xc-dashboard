@@ -78,3 +78,6 @@ logs/
 # Celery beat runtime state — recreated on every beat startup
 celerybeat-schedule
 celerybeat-schedule.db
+
+# TypeScript incremental build cache — regenerated on every type-check
+*.tsbuildinfo
