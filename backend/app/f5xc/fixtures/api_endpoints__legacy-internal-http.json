@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "method": "GET",
+      "path": "/internal/status",
+      "discovery_confidence": 92,
+      "total_request_samples": 234,
+      "last_seen_at": "2026-04-29T03:00:03Z",
+      "first_seen_at": "2026-02-11T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/internal/sync",
+      "discovery_confidence": 98,
+      "total_request_samples": 45,
+      "last_seen_at": "2026-04-29T02:52:06Z",
+      "first_seen_at": "2026-02-01T03:48:00Z",
+      "auth_type": "apikey",
+      "response_codes": [
+        200,
+        401,
+        500
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "total_count": 2
+}

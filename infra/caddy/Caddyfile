@@ -1,0 +1,49 @@
+# Caddyfile — F5 XC Dashboard reverse proxy + TLS termination
+#
+# Dev: `tls internal` issues a self-signed cert from Caddy's local CA.
+#   Trust the CA root once and the browser stops warning. Get the root:
+#     docker exec f5xc-dashboard-caddy-1 cat /data/caddy/pki/authorities/local/root.crt
+#
+# Production: replace the `localhost` block name with your hostname and
+#   swap `tls internal` for `tls ops@example.com` (ACME).
+
+{
+	# Caddy's local CA for self-signed dev certs.
+	local_certs
+}
+
+# HTTPS — main vhost
+localhost {
+	tls internal
+	encode gzip
+
+	# /api/* and /healthz → backend
+	@api path /api/* /healthz
+	handle @api {
+		reverse_proxy backend:8000 {
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-For {remote_host}
+			header_up Host {host}
+		}
+	}
+
+	# Everything else → frontend (Next.js dev server, WS upgrades handled
+	# automatically by reverse_proxy)
+	handle {
+		reverse_proxy frontend:3000 {
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-For {remote_host}
+			header_up Host {host}
+		}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+# HTTP → HTTPS redirect
+:80 {
+	redir https://localhost{uri} permanent
+}

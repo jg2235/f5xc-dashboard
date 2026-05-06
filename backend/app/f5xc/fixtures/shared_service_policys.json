@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "global-blocklist",
+      "uid": "svcpol-global-blocklist",
+      "get_spec": {
+        "default_action_choice": {
+          "deny_list": {}
+        },
+        "rules": [
+          {
+            "simple_rule": {
+              "action": "DENY",
+              "country_list": {
+                "country_codes": [
+                  "KP",
+                  "IR"
+                ]
+              }
+            }
+          },
+          {
+            "simple_rule": {
+              "action": "DENY",
+              "ip_prefix_list": {
+                "prefixes": [
+                  "192.0.2.0/24"
+                ]
+              }
+            }
+          },
+          {
+            "simple_rule": {
+              "action": "ALLOW",
+              "path": {
+                "prefix": "/health"
+              }
+            }
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-01-01T00:00:00Z",
+        "modification_timestamp": "2026-04-20T09:00:00Z"
+      }
+    }
+  ]
+}

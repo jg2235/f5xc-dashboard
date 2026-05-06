@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "address": "198.51.100.5",
+      "port": 80,
+      "status": "UNKNOWN",
+      "consecutive_failures": 0,
+      "last_status_change": null,
+      "last_probe": "2026-04-26T23:39:01.767923Z"
+    }
+  ]
+}

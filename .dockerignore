@@ -1,0 +1,47 @@
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Local env / secrets — never bake into images
+.env
+.env.*
+secrets/
+
+# Local data / backups
+backups/
+pgdata/
+temp/
+*.bak
+*.dump
+
+# Python build artifacts
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+*.egg-info
+build
+dist
+.venv
+venv
+
+# Node build artifacts
+node_modules
+.next
+.vercel
+out
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+
+# Docs / GitHub workflows
+.github
+docs
+*.md
+!README.md

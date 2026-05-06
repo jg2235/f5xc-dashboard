@@ -1,0 +1,141 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "owasp-top10-strict",
+      "uid": "appfw-owasp-top10-strict",
+      "labels": {
+        "ves.io/severity": "high"
+      },
+      "get_spec": {
+        "blocking": {},
+        "default_anonymization": {
+          "default_anonymization": {}
+        },
+        "default_bot_setting": {
+          "default_bot_setting": {}
+        },
+        "default_detection_settings": {},
+        "violation_settings": {
+          "owasp_top10": {
+            "action": "BLOCK"
+          },
+          "automation_attacks": {
+            "action": "BLOCK"
+          },
+          "credit_card_data": {
+            "action": "BLOCK"
+          },
+          "ssn_data": {
+            "action": "MONITOR"
+          }
+        },
+        "blocking_settings": {
+          "sql_injection": {
+            "action": "BLOCK"
+          },
+          "cross_site_scripting": {
+            "action": "BLOCK"
+          },
+          "command_injection": {
+            "action": "BLOCK"
+          },
+          "path_traversal": {
+            "action": "BLOCK"
+          },
+          "broken_auth": {
+            "action": "MONITOR"
+          }
+        },
+        "exclusion_rules": [
+          {
+            "path": {
+              "prefix": "/api/health"
+            },
+            "violations": [
+              "VIOL_HTTP_PROTOCOL"
+            ]
+          },
+          {
+            "path": {
+              "prefix": "/static"
+            },
+            "violations": [
+              "VIOL_FILE_UPLOAD"
+            ]
+          }
+        ],
+        "allowed_response_codes": {
+          "response_code": [
+            200,
+            201,
+            204,
+            301,
+            302,
+            304,
+            401,
+            403,
+            404
+          ]
+        }
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-02-12T00:00:00Z",
+        "modification_timestamp": "2026-04-01T10:00:00Z"
+      }
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "api-protection-strict",
+      "uid": "appfw-api-protection-strict",
+      "labels": {},
+      "get_spec": {
+        "blocking": {},
+        "default_anonymization": {
+          "default_anonymization": {}
+        },
+        "default_detection_settings": {},
+        "violation_settings": {
+          "api_attacks": {
+            "action": "BLOCK"
+          },
+          "json_validation": {
+            "action": "BLOCK"
+          },
+          "graphql_attacks": {
+            "action": "BLOCK"
+          }
+        },
+        "blocking_settings": {
+          "sql_injection": {
+            "action": "BLOCK"
+          },
+          "command_injection": {
+            "action": "BLOCK"
+          },
+          "json_payload_anomaly": {
+            "action": "BLOCK"
+          }
+        },
+        "allowed_response_codes": {
+          "response_code": [
+            200,
+            201,
+            204,
+            400,
+            401,
+            403,
+            404,
+            422
+          ]
+        }
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-03-05T00:00:00Z",
+        "modification_timestamp": "2026-03-22T08:00:00Z"
+      }
+    }
+  ]
+}

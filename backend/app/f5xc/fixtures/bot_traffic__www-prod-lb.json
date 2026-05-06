@@ -1,0 +1,380 @@
+{
+  "events": [
+    {
+      "event_time": "2026-04-29T03:09:10Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 82,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:07Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 91,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:19Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 82,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:16Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 92,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:01Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 82,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "passed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:16Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 91,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:02:33Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 92,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "passed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:56Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 85,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:39Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 82,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "passed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:39Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 91,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "passed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:14Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 92,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:20Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 91,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:09Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 95,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:32Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 80,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:28Z",
+      "namespace": "j-granieri",
+      "lb_name": "www-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 90,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/checkout",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 HeadlessChrome/119.0",
+      "challenge": {
+        "type": "captcha",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    }
+  ],
+  "total_count": 15
+}

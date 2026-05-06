@@ -1,0 +1,62 @@
+{
+  "items": [
+    {
+      "name": "ny8-nyc",
+      "namespace": "system",
+      "uid": "site-ny8-nyc",
+      "labels": {"ves.io/region": "us-east-1", "ves.io/provider": "ves-io-internal"},
+      "get_spec": {
+        "site_type": "RE",
+        "region": "us-east-1",
+        "provider": "ves-io-internal"
+      },
+      "system_metadata": {
+        "uid": "site-ny8-nyc",
+        "operational_status": "ONLINE"
+      }
+    },
+    {
+      "name": "sv10-sjc",
+      "namespace": "system",
+      "uid": "site-sv10-sjc",
+      "labels": {"ves.io/region": "us-west-1", "ves.io/provider": "ves-io-internal"},
+      "get_spec": {
+        "site_type": "RE",
+        "region": "us-west-1",
+        "provider": "ves-io-internal"
+      },
+      "system_metadata": {
+        "uid": "site-sv10-sjc",
+        "operational_status": "ONLINE"
+      }
+    },
+    {
+      "name": "nyc1-site",
+      "namespace": "system",
+      "uid": "site-nyc1",
+      "labels": {"ves.io/region": "us-east-1", "ves.io/provider": "AWS"},
+      "get_spec": {
+        "site_type": "CE",
+        "region": "us-east-1",
+        "provider": "AWS"
+      },
+      "system_metadata": {
+        "uid": "site-nyc1",
+        "operational_status": "ONLINE"
+      }
+    },
+    {
+      "name": "all-res",
+      "namespace": "shared",
+      "uid": "vsite-all-res",
+      "labels": {},
+      "get_spec": {
+        "site_type": "VIRTUAL_SITE",
+        "site_selector": {"expressions": ["ves.io/site_type=RE"]}
+      },
+      "system_metadata": {
+        "uid": "vsite-all-res"
+      }
+    }
+  ]
+}

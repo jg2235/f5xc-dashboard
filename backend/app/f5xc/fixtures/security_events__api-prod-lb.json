@@ -1,0 +1,844 @@
+{
+  "events": [
+    {
+      "event_time": "2026-04-29T00:34:49Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.99",
+      "src_country": "CN",
+      "src_asn": 4134,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_GRAPHQL_ATTACK",
+      "violation_ids": [
+        "VIOL_GRAPHQL_ATTACK"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "critical",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:30:53Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:30:58Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:33:02Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.99",
+      "src_country": "CN",
+      "src_asn": 4134,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:30:49Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "PUT",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:30:31Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "PUT",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:27:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "PUT",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:31:10Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "GET",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:30:43Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "GET",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:35:13Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "PUT",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:28:14Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "PUT",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:29:27Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "GET",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:35:55Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:35:09Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:26:57Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": "VIOL_GRAPHQL_ATTACK",
+      "violation_ids": [
+        "VIOL_GRAPHQL_ATTACK"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "critical",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:27:24Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "GET",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:27:54Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "PUT",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:27:07Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:34:41Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_GRAPHQL_ATTACK",
+      "violation_ids": [
+        "VIOL_GRAPHQL_ATTACK"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "critical",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:33:39Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "PUT",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:32:21Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "POST",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:28:03Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:26:02Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:30:55Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.99",
+      "src_country": "CN",
+      "src_asn": 4134,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_JSON_PAYLOAD",
+      "violation_ids": [
+        "VIOL_JSON_PAYLOAD"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:28:34Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "POST",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:29:06Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "src_ip": "198.51.100.99",
+      "src_country": "CN",
+      "src_asn": 4134,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": "VIOL_JSON_PAYLOAD",
+      "violation_ids": [
+        "VIOL_JSON_PAYLOAD"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:29:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_SCHEMA",
+      "violation_ids": [
+        "VIOL_API_SCHEMA"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:33:42Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_SCHEMA",
+      "violation_ids": [
+        "VIOL_API_SCHEMA"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:32:24Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:28:49Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:26:48Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "GET",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:34:50Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": "VIOL_API_SCHEMA",
+      "violation_ids": [
+        "VIOL_API_SCHEMA"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:32:36Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_JSON_PAYLOAD",
+      "violation_ids": [
+        "VIOL_JSON_PAYLOAD"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:34:03Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "203.0.113.45",
+      "src_country": "RU",
+      "src_asn": 13335,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_RATE_LIMIT",
+      "violation_ids": [
+        "VIOL_API_RATE_LIMIT"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "medium",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:33:09Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": "VIOL_API_SCHEMA",
+      "violation_ids": [
+        "VIOL_API_SCHEMA"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:30:42Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "POST",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:29:36Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.10",
+      "src_country": "US",
+      "src_asn": 7922,
+      "method": "GET",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:31:52Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "PUT",
+      "url": "/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    },
+    {
+      "event_time": "2026-04-29T00:33:57Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "src_ip": "198.51.100.78",
+      "src_country": "BR",
+      "src_asn": 16735,
+      "method": "POST",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 403,
+      "violation_name": "VIOL_API_SCHEMA",
+      "violation_ids": [
+        "VIOL_API_SCHEMA"
+      ],
+      "threat_categories": [
+        "uncategorized"
+      ],
+      "severity": "high",
+      "waf_policy": {
+        "namespace": "shared",
+        "name": "owasp-top10-strict"
+      }
+    },
+    {
+      "event_time": "2026-04-29T00:29:41Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "ALLOW",
+      "src_ip": "203.0.113.200",
+      "src_country": "DE",
+      "src_asn": 3320,
+      "method": "GET",
+      "url": "/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "rsp_code": 200,
+      "violation_name": null,
+      "violation_ids": [],
+      "threat_categories": [],
+      "severity": "info",
+      "waf_policy": null
+    }
+  ],
+  "total_count": 40
+}

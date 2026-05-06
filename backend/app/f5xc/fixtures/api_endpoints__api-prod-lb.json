@@ -1,0 +1,361 @@
+{
+  "items": [
+    {
+      "method": "GET",
+      "path": "/api/v2/users",
+      "discovery_confidence": 98,
+      "total_request_samples": 14523,
+      "last_seen_at": "2026-04-29T03:12:28Z",
+      "first_seen_at": "2026-02-04T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401,
+        404
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/users",
+      "discovery_confidence": 85,
+      "total_request_samples": 1843,
+      "last_seen_at": "2026-04-29T03:31:52Z",
+      "first_seen_at": "2026-04-02T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        201,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/users/{id}",
+      "discovery_confidence": 87,
+      "total_request_samples": 8932,
+      "last_seen_at": "2026-04-29T03:01:01Z",
+      "first_seen_at": "2026-03-09T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": null
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/users/{id}",
+      "discovery_confidence": 98,
+      "total_request_samples": 432,
+      "last_seen_at": "2026-04-29T02:59:34Z",
+      "first_seen_at": "2026-02-19T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/users/{id}",
+      "discovery_confidence": 90,
+      "total_request_samples": 89,
+      "last_seen_at": "2026-04-29T03:41:12Z",
+      "first_seen_at": "2026-04-15T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        204,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/orders",
+      "discovery_confidence": 87,
+      "total_request_samples": 23145,
+      "last_seen_at": "2026-04-29T03:21:57Z",
+      "first_seen_at": "2026-04-06T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/orders",
+      "discovery_confidence": 94,
+      "total_request_samples": 4523,
+      "last_seen_at": "2026-04-29T03:42:31Z",
+      "first_seen_at": "2026-03-12T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        201,
+        400,
+        401,
+        402
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/orders/{id}",
+      "discovery_confidence": 91,
+      "total_request_samples": 12932,
+      "last_seen_at": "2026-04-29T03:15:34Z",
+      "first_seen_at": "2026-03-28T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/products",
+      "discovery_confidence": 93,
+      "total_request_samples": 56123,
+      "last_seen_at": "2026-04-29T03:20:06Z",
+      "first_seen_at": "2026-03-29T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/products/{id}",
+      "discovery_confidence": 90,
+      "total_request_samples": 31234,
+      "last_seen_at": "2026-04-29T03:36:48Z",
+      "first_seen_at": "2026-04-09T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200,
+        404
+      ],
+      "query_params": null,
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/auth/login",
+      "discovery_confidence": 97,
+      "total_request_samples": 8923,
+      "last_seen_at": "2026-04-29T03:44:06Z",
+      "first_seen_at": "2026-02-16T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/auth/refresh",
+      "discovery_confidence": 90,
+      "total_request_samples": 5234,
+      "last_seen_at": "2026-04-29T03:34:57Z",
+      "first_seen_at": "2026-04-10T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/internal/debug",
+      "discovery_confidence": 75,
+      "total_request_samples": 234,
+      "last_seen_at": "2026-04-29T02:48:26Z",
+      "first_seen_at": "2026-03-21T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        403
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/admin/flush-cache",
+      "discovery_confidence": 72,
+      "total_request_samples": 12,
+      "last_seen_at": "2026-04-29T03:02:20Z",
+      "first_seen_at": "2026-04-06T03:48:00Z",
+      "auth_type": "apikey",
+      "response_codes": [
+        200,
+        403,
+        500
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/legacy/customer-data",
+      "discovery_confidence": 71,
+      "total_request_samples": 145,
+      "last_seen_at": "2026-04-29T03:27:05Z",
+      "first_seen_at": "2026-04-15T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    }
+  ],
+  "total_count": 15
+}

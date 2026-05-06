@@ -1,0 +1,392 @@
+{
+  "items": [
+    {
+      "method": "POST",
+      "path": "/api/checkout",
+      "discovery_confidence": 90,
+      "total_request_samples": 1834,
+      "last_seen_at": "2026-04-29T03:06:17Z",
+      "first_seen_at": "2026-02-23T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401,
+        402
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/cart/add",
+      "discovery_confidence": 90,
+      "total_request_samples": 8923,
+      "last_seen_at": "2026-04-29T03:04:02Z",
+      "first_seen_at": "2026-03-07T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/cart",
+      "discovery_confidence": 91,
+      "total_request_samples": 23145,
+      "last_seen_at": "2026-04-29T02:58:02Z",
+      "first_seen_at": "2026-03-07T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/recommendations",
+      "discovery_confidence": 66,
+      "total_request_samples": 12345,
+      "last_seen_at": "2026-04-29T02:53:29Z",
+      "first_seen_at": "2026-03-06T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/wishlist",
+      "discovery_confidence": 67,
+      "total_request_samples": 3421,
+      "last_seen_at": "2026-04-29T03:01:14Z",
+      "first_seen_at": "2026-03-24T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/wishlist/add",
+      "discovery_confidence": 69,
+      "total_request_samples": 832,
+      "last_seen_at": "2026-04-29T03:12:04Z",
+      "first_seen_at": "2026-02-16T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/inventory/check",
+      "discovery_confidence": 78,
+      "total_request_samples": 14523,
+      "last_seen_at": "2026-04-29T03:10:56Z",
+      "first_seen_at": "2026-02-17T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200,
+        404
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/coupons/apply",
+      "discovery_confidence": 76,
+      "total_request_samples": 1843,
+      "last_seen_at": "2026-04-29T03:25:40Z",
+      "first_seen_at": "2026-03-11T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/profile",
+      "discovery_confidence": 66,
+      "total_request_samples": 8923,
+      "last_seen_at": "2026-04-29T03:12:58Z",
+      "first_seen_at": "2026-03-28T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "PUT",
+      "path": "/api/profile",
+      "discovery_confidence": 60,
+      "total_request_samples": 432,
+      "last_seen_at": "2026-04-29T03:03:09Z",
+      "first_seen_at": "2026-04-02T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/history",
+      "discovery_confidence": 80,
+      "total_request_samples": 4523,
+      "last_seen_at": "2026-04-29T03:06:59Z",
+      "first_seen_at": "2026-03-18T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/reviews",
+      "discovery_confidence": 63,
+      "total_request_samples": 234,
+      "last_seen_at": "2026-04-29T03:04:59Z",
+      "first_seen_at": "2026-03-08T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        201,
+        400,
+        401
+      ],
+      "query_params": null,
+      "body_params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/search/suggestions",
+      "discovery_confidence": 76,
+      "total_request_samples": 32145,
+      "last_seen_at": "2026-04-29T02:52:23Z",
+      "first_seen_at": "2026-03-13T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "discovery_confidence": 75,
+      "total_request_samples": 8632,
+      "last_seen_at": "2026-04-29T03:09:51Z",
+      "first_seen_at": "2026-04-12T03:48:00Z",
+      "auth_type": "none",
+      "response_codes": [
+        200,
+        503
+      ],
+      "query_params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "body_params": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/track/{order_id}",
+      "discovery_confidence": 80,
+      "total_request_samples": 1245,
+      "last_seen_at": "2026-04-29T03:02:02Z",
+      "first_seen_at": "2026-02-26T03:48:00Z",
+      "auth_type": "bearer",
+      "response_codes": [
+        200,
+        401,
+        404
+      ],
+      "query_params": null,
+      "body_params": null
+    }
+  ],
+  "total_count": 15
+}

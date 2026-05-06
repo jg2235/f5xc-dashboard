@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "address": "10.0.1.20",
+      "port": 8443,
+      "status": "HEALTHY",
+      "consecutive_failures": 0,
+      "last_status_change": "2026-04-23T23:39:31.767923Z",
+      "last_probe": "2026-04-26T23:39:09.767923Z"
+    },
+    {
+      "address": "10.0.1.21",
+      "port": 8443,
+      "status": "HEALTHY",
+      "consecutive_failures": 0,
+      "last_status_change": "2026-04-23T23:39:31.767923Z",
+      "last_probe": "2026-04-26T23:39:09.767923Z"
+    },
+    {
+      "address": "10.0.1.22",
+      "port": 8443,
+      "status": "HEALTHY",
+      "consecutive_failures": 0,
+      "last_status_change": "2026-04-23T23:39:31.767923Z",
+      "last_probe": "2026-04-26T23:39:09.767923Z"
+    }
+  ]
+}

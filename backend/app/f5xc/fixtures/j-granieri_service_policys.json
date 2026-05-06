@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "geo-block-policy",
+      "uid": "svcpol-geo-block-policy",
+      "get_spec": {
+        "default_action_choice": {
+          "allow_list": {}
+        },
+        "rules": [
+          {
+            "simple_rule": {
+              "action": "DENY",
+              "country_list": {
+                "country_codes": [
+                  "RU",
+                  "BY"
+                ]
+              }
+            }
+          },
+          {
+            "simple_rule": {
+              "action": "DENY",
+              "asn_list": {
+                "as_numbers": [
+                  13335
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-08-12T00:00:00Z",
+        "modification_timestamp": "2026-04-22T15:00:00Z"
+      }
+    }
+  ]
+}

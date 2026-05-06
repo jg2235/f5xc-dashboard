@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "dev-monitoring-only",
+      "uid": "appfw-dev-monitoring-only",
+      "labels": {
+        "env": "dev"
+      },
+      "get_spec": {
+        "monitoring": {},
+        "default_anonymization": {
+          "disable_anonymization": {}
+        },
+        "default_detection_settings": {},
+        "violation_settings": {
+          "owasp_top10": {
+            "action": "MONITOR"
+          }
+        },
+        "blocking_settings": {
+          "sql_injection": {
+            "action": "MONITOR"
+          },
+          "cross_site_scripting": {
+            "action": "MONITOR"
+          }
+        }
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-09-01T00:00:00Z",
+        "modification_timestamp": "2026-04-15T11:00:00Z"
+      }
+    }
+  ]
+}

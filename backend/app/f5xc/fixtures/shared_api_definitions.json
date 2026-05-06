@@ -1,0 +1,122 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "public-api-v2-spec",
+      "uid": "apidef-public-api-v2-spec",
+      "get_spec": {
+        "api_specs": [
+          {
+            "openapi_spec": {
+              "openapi": "3.0.0",
+              "paths": {
+                "/api/v2/users": {
+                  "get": {
+                    "summary": "list users"
+                  },
+                  "post": {
+                    "summary": "create user"
+                  }
+                },
+                "/api/v2/users/{id}": {
+                  "get": {
+                    "summary": "get user"
+                  },
+                  "put": {
+                    "summary": "update user"
+                  },
+                  "delete": {
+                    "summary": "delete user"
+                  }
+                },
+                "/api/v2/orders": {
+                  "get": {
+                    "summary": "list orders"
+                  },
+                  "post": {
+                    "summary": "create order"
+                  }
+                },
+                "/api/v2/orders/{id}": {
+                  "get": {
+                    "summary": "get order"
+                  }
+                },
+                "/api/v2/products": {
+                  "get": {
+                    "summary": "list products"
+                  }
+                },
+                "/api/v2/products/{id}": {
+                  "get": {
+                    "summary": "get product"
+                  }
+                },
+                "/api/v2/auth/login": {
+                  "post": {
+                    "summary": "login"
+                  }
+                },
+                "/api/v2/auth/refresh": {
+                  "post": {
+                    "summary": "refresh token"
+                  }
+                }
+              }
+            },
+            "validation": {
+              "enforcement_block": {}
+            }
+          }
+        ],
+        "validation_rules": [
+          {
+            "name": "strict-mode",
+            "action": "BLOCK"
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-03-10T00:00:00Z",
+        "modification_timestamp": "2026-04-18T12:00:00Z"
+      }
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "ecommerce-checkout-api",
+      "uid": "apidef-ecommerce-checkout",
+      "get_spec": {
+        "api_specs": [
+          {
+            "openapi_spec": {
+              "openapi": "3.0.0",
+              "paths": {
+                "/api/checkout": {
+                  "post": {
+                    "summary": "checkout"
+                  }
+                },
+                "/api/cart": {
+                  "get": {
+                    "summary": "view cart"
+                  }
+                },
+                "/api/cart/add": {
+                  "post": {
+                    "summary": "add to cart"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-08-01T00:00:00Z",
+        "modification_timestamp": "2026-04-20T12:00:00Z"
+      }
+    }
+  ]
+}

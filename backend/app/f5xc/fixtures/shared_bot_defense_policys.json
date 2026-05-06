@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "shared",
+      "name": "global-bot-defense",
+      "uid": "bot-global-bot-defense",
+      "get_spec": {
+        "protected_app_endpoints": [
+          {
+            "path": {
+              "prefix": "/login"
+            },
+            "http_methods": [
+              "METHOD_POST"
+            ],
+            "protocol": "HTTPS",
+            "mitigation": {
+              "js_challenge": {}
+            }
+          },
+          {
+            "path": {
+              "prefix": "/signup"
+            },
+            "http_methods": [
+              "METHOD_POST"
+            ],
+            "protocol": "HTTPS",
+            "mitigation": {
+              "captcha_challenge": {}
+            }
+          },
+          {
+            "path": {
+              "exact": "/admin/login"
+            },
+            "http_methods": [
+              "METHOD_POST"
+            ],
+            "protocol": "HTTPS",
+            "mitigation": {
+              "block": {}
+            }
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-02-20T00:00:00Z",
+        "modification_timestamp": "2026-04-10T07:00:00Z"
+      }
+    }
+  ]
+}

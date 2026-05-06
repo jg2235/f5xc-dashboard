@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "address": "203.0.113.10",
+      "port": 8080,
+      "status": "HEALTHY",
+      "consecutive_failures": 0,
+      "last_status_change": "2026-04-21T23:39:31.767923Z",
+      "last_probe": "2026-04-26T23:39:13.767923Z"
+    },
+    {
+      "address": "203.0.113.11",
+      "port": 8080,
+      "status": "UNHEALTHY",
+      "consecutive_failures": 7,
+      "last_status_change": "2026-04-26T23:16:31.767923Z",
+      "last_probe": "2026-04-26T23:39:13.767923Z"
+    }
+  ]
+}

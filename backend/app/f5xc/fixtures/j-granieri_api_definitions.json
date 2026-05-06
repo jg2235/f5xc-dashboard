@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "internal-api-spec",
+      "uid": "apidef-internal-api-spec",
+      "get_spec": {
+        "api_specs": [
+          {
+            "openapi_spec": {
+              "openapi": "3.0.0"
+            },
+            "endpoints": [
+              {
+                "path": "/internal/v1/users"
+              },
+              {
+                "path": "/internal/v1/audit"
+              }
+            ]
+          }
+        ]
+      },
+      "system_metadata": {
+        "creation_timestamp": "2025-10-15T00:00:00Z",
+        "modification_timestamp": "2026-04-05T16:00:00Z"
+      }
+    }
+  ]
+}

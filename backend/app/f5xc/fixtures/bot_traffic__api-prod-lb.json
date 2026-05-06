@@ -1,0 +1,1405 @@
+{
+  "events": [
+    {
+      "event_time": "2026-04-29T03:01:37Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 91,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": {
+        "type": "js",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:35Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 91,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:43Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 81,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:11Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 91,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:26Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 96,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:48Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 96,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "missing_canvas_fingerprint",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 86,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": {
+        "type": "js",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "headless_browser_signature",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:19Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 88,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:01Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 87,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:02:48Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 80,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:18Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 88,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:59Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 96,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": {
+        "type": "js",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:11Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 95,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:58Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 99,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "navigator_inconsistency",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:14Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 77,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "missing_canvas_fingerprint",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:36Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 83,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:23Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 79,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:11Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 79,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "headless_browser_signature",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:01:59Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 97,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:37Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 90,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "headless_browser_signature",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:33Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 82,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "automation_marker",
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:34Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 84,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/users",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:33Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 80,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "headless_browser_signature",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:08Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 92,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint",
+        "tls_fingerprint_mismatch",
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 89,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:31Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 89,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:38Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 84,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:31Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 93,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:58Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 81,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:21Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 97,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": {
+        "type": "js",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:33Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 82,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:01:03Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 95,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:15Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 96,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/users",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:05:31Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 83,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:33Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 79,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/orders",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker",
+        "headless_browser_signature",
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:13Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 78,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker",
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:08:48Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 77,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": {
+        "type": "js",
+        "result": "abandoned"
+      },
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:23Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 79,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/api/v2/users",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:43Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 92,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:06Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 81,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:41Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 80,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch",
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:09Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 76,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:59Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 99,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker",
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:11Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 86,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:26Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 77,
+      "src_ip": "104.131.42.5",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/users",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:51Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 75,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 84,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:01:45Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 76,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/api/v2/orders",
+      "user_agent": "PostmanRuntime/7.36.0",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:43Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 97,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": {
+        "type": "js",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:15Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 99,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/users",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:06:45Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 78,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:01:17Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 79,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "POST",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker",
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:04:04Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 80,
+      "src_ip": "159.203.50.10",
+      "src_country": "US",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/orders",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:09:15Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 83,
+      "src_ip": "139.59.30.20",
+      "src_country": "IN",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "missing_canvas_fingerprint",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:36Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 79,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/orders",
+      "user_agent": "Apache-HttpClient/4.5.13 (Java/17.0.9)",
+      "challenge": null,
+      "device_anomalies": [
+        "navigator_inconsistency"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:10Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "MONITOR",
+      "bot_category": "suspicious",
+      "confidence_score": 75,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "headless_browser_signature",
+        "navigator_inconsistency",
+        "missing_canvas_fingerprint"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:00:01Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 77,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "GET",
+      "url": "/api/v2/auth/refresh",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": {
+        "type": "js",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "missing_canvas_fingerprint",
+        "headless_browser_signature",
+        "tls_fingerprint_mismatch"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:47Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 77,
+      "src_ip": "172.245.18.92",
+      "src_country": "US",
+      "src_asn": 36352,
+      "method": "GET",
+      "url": "/api/v2/products",
+      "user_agent": "okhttp/4.12.0",
+      "challenge": null,
+      "device_anomalies": [
+        "tls_fingerprint_mismatch",
+        "navigator_inconsistency",
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:07:51Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "CHALLENGE",
+      "bot_category": "automation",
+      "confidence_score": 80,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": {
+        "type": "js",
+        "result": "failed"
+      },
+      "device_anomalies": [
+        "headless_browser_signature"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    },
+    {
+      "event_time": "2026-04-29T03:03:51Z",
+      "namespace": "j-granieri",
+      "lb_name": "api-prod-lb",
+      "action": "BLOCK",
+      "bot_category": "data_center",
+      "confidence_score": 95,
+      "src_ip": "46.101.99.5",
+      "src_country": "DE",
+      "src_asn": 14061,
+      "method": "POST",
+      "url": "/api/v2/products",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0",
+      "challenge": null,
+      "device_anomalies": [
+        "automation_marker"
+      ],
+      "bot_policy": {
+        "namespace": "shared",
+        "name": "global-bot-defense"
+      }
+    }
+  ],
+  "total_count": 60
+}

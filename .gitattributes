@@ -1,0 +1,18 @@
+# Default to LF on checkout, normalize on commit
+* text=auto eol=lf
+
+# Binary types — never normalize
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.dump  binary
+*.tar.gz binary
+*.zip   binary
+
+# Lockfiles — vendored, don't show in diffs by default
+package-lock.json -diff
+yarn.lock         -diff
+poetry.lock       -diff

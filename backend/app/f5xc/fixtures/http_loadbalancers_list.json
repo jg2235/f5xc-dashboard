@@ -1,0 +1,224 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "www-prod-lb",
+      "uid": "a1b2c3d4-0001-4000-8000-000000000001",
+      "labels": {
+        "ves.io/app_type": "web",
+        "env": "prod"
+      },
+      "annotations": {},
+      "description": "Production www.example.com HTTPS LB",
+      "disabled": false,
+      "get_spec": {
+        "domains": [
+          "www.example.com",
+          "example.com"
+        ],
+        "https_auto_cert": {
+          "http_redirect": true,
+          "add_hsts": true,
+          "no_mtls": {},
+          "default_header": {},
+          "tls_config": {
+            "default_security": {}
+          },
+          "port": 443
+        },
+        "advertise_on_public_default_vip": {},
+        "default_route_pools": [
+          {
+            "pool": {
+              "tenant": "f5-amer-ent",
+              "namespace": "j-granieri",
+              "name": "www-origin-pool"
+            },
+            "weight": 1,
+            "priority": 1
+          }
+        ],
+        "app_firewall": {
+          "tenant": "f5-amer-ent",
+          "namespace": "shared",
+          "name": "owasp-top10-strict"
+        },
+        "active_service_policies": {
+          "policies": [
+            {
+              "tenant": "f5-amer-ent",
+              "namespace": "j-granieri",
+              "name": "geo-block-policy"
+            }
+          ]
+        },
+        "bot_defense": {
+          "policy": {
+            "protected_app_endpoints": [
+              {
+                "http_methods": [
+                  "METHOD_POST"
+                ],
+                "path": {
+                  "prefix": "/login"
+                },
+                "protocol": "HTTPS"
+              }
+            ]
+          }
+        },
+        "api_protection_rules": {
+          "api_endpoint_rules": []
+        },
+        "enable_api_discovery": {
+          "enable_learn_from_redirect_traffic": {}
+        },
+        "api_definition": {
+          "api_definitions": [
+            {
+              "namespace": "shared",
+              "name": "ecommerce-checkout-api"
+            }
+          ]
+        }
+      },
+      "system_metadata": {
+        "uid": "a1b2c3d4-0001-4000-8000-000000000001",
+        "creation_timestamp": "2025-03-15T10:22:10.123Z",
+        "modification_timestamp": "2026-04-10T14:02:33.456Z"
+      }
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "api-prod-lb",
+      "uid": "a1b2c3d4-0001-4000-8000-000000000002",
+      "labels": {
+        "ves.io/app_type": "api",
+        "env": "prod"
+      },
+      "annotations": {},
+      "description": "Production api.example.com with API protection",
+      "disabled": false,
+      "get_spec": {
+        "domains": [
+          "api.example.com"
+        ],
+        "https": {
+          "http_redirect": true,
+          "tls_cert_params": {
+            "certificates": [
+              {
+                "tenant": "f5-amer-ent",
+                "namespace": "j-granieri",
+                "name": "api-example-com-2026"
+              }
+            ],
+            "tls_config": {
+              "default_security": {}
+            }
+          },
+          "port": 443
+        },
+        "advertise_on_public_default_vip": {},
+        "default_route_pools": [
+          {
+            "pool": {
+              "tenant": "f5-amer-ent",
+              "namespace": "j-granieri",
+              "name": "api-origin-pool"
+            },
+            "weight": 1,
+            "priority": 1
+          }
+        ],
+        "app_firewall": {
+          "tenant": "f5-amer-ent",
+          "namespace": "shared",
+          "name": "api-protection-strict"
+        },
+        "api_protection_rules": {
+          "api_endpoint_rules": [
+            {
+              "api_endpoint": {
+                "method": "GET",
+                "path": "/v1/users"
+              },
+              "action": {
+                "allow": {}
+              }
+            }
+          ]
+        },
+        "api_discovery": {},
+        "enable_api_discovery": {
+          "enable_learn_from_redirect_traffic": {}
+        },
+        "api_definition": {
+          "api_definitions": [
+            {
+              "namespace": "shared",
+              "name": "public-api-v2-spec"
+            }
+          ]
+        }
+      },
+      "system_metadata": {
+        "uid": "a1b2c3d4-0001-4000-8000-000000000002",
+        "creation_timestamp": "2025-04-01T08:14:00.000Z",
+        "modification_timestamp": "2026-04-20T09:17:12.900Z"
+      }
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "legacy-internal-http",
+      "uid": "a1b2c3d4-0001-4000-8000-000000000003",
+      "labels": {
+        "env": "dev"
+      },
+      "annotations": {},
+      "description": "Legacy internal HTTP LB (no WAF, dev only)",
+      "disabled": false,
+      "get_spec": {
+        "domains": [
+          "internal-legacy.dev.example.local"
+        ],
+        "http": {
+          "dns_volterra_managed": false,
+          "port": 80
+        },
+        "advertise_custom": {
+          "advertise_where": [
+            {
+              "site": {
+                "site": {
+                  "tenant": "f5-amer-ent",
+                  "namespace": "system",
+                  "name": "nyc1-site"
+                }
+              }
+            }
+          ]
+        },
+        "default_route_pools": [
+          {
+            "pool": {
+              "tenant": "f5-amer-ent",
+              "namespace": "j-granieri",
+              "name": "legacy-origin-pool"
+            },
+            "weight": 1,
+            "priority": 1
+          }
+        ]
+      },
+      "system_metadata": {
+        "uid": "a1b2c3d4-0001-4000-8000-000000000003",
+        "creation_timestamp": "2024-11-05T00:00:00.000Z",
+        "modification_timestamp": "2025-08-22T12:00:00.000Z"
+      }
+    }
+  ]
+}

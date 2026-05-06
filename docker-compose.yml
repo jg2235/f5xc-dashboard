@@ -1,0 +1,149 @@
+services:
+  postgres:
+    secrets:
+      - postgres_password
+    image: timescale/timescaledb:2.17.2-pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-f5xc}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: ${POSTGRES_DB:-f5xc_dashboard}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-f5xc} -d ${POSTGRES_DB:-f5xc_dashboard}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    entrypoint: ["/app/scripts/entrypoint.sh"]
+    secrets:
+      - jwt_secret_key
+      - f5xc_api_token
+      - postgres_password
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-f5xc}:__PG_PWD__@postgres:5432/${POSTGRES_DB:-f5xc_dashboard}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+
+  worker:
+    entrypoint: ["/app/scripts/entrypoint.sh"]
+    secrets:
+      - jwt_secret_key
+      - f5xc_api_token
+      - postgres_password
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-f5xc}:__PG_PWD__@postgres:5432/${POSTGRES_DB:-f5xc_dashboard}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
+    volumes:
+      - ./backend:/app
+    # Worker is not an HTTP server; the Dockerfile's inherited curl healthcheck
+    # would always fail. Disable the inherited probe. Celery ping via "celery
+    # -A ... inspect ping" is noisy in logs — operational monitoring should
+    # come from Celery flower / Prometheus exporter in a future slice.
+    healthcheck:
+      disable: true
+
+  beat:
+    entrypoint: ["/app/scripts/entrypoint.sh"]
+    secrets:
+      - jwt_secret_key
+      - f5xc_api_token
+      - postgres_password
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-f5xc}:__PG_PWD__@postgres:5432/${POSTGRES_DB:-f5xc_dashboard}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.workers.celery_app beat --loglevel=info
+    volumes:
+      - ./backend:/app
+    # Beat has no clean probe; disabling the inherited HTTP healthcheck is
+    # the honest answer. Liveness is implicit in its scheduling activity,
+    # which shows in the worker logs.
+    healthcheck:
+      disable: true
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    # API_BASE_URL is read at runtime by next.config.js rewrites() (server-side).
+    # Using the Docker Compose service name "backend" resolves on the internal
+    # network. Do NOT use NEXT_PUBLIC_* here — those bake at build time and
+    # would ship "localhost:8000" to production if mis-set.
+    environment:
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+
+secrets:
+  jwt_secret_key:
+    file: ./secrets/jwt_secret_key
+  f5xc_api_token:
+    file: ./secrets/f5xc_api_token
+  postgres_password:
+    file: ./secrets/postgres_password
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

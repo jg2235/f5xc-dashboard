@@ -1,0 +1,55 @@
+{
+  "items": [
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "www-origin-pool",
+      "get_spec": {
+        "origin_servers": [
+          {"public_ip": {"ip": "203.0.113.10"}, "labels": {}},
+          {"public_ip": {"ip": "203.0.113.11"}, "labels": {}}
+        ],
+        "no_tls": {},
+        "port": 8080,
+        "same_as_endpoint_port": {},
+        "loadbalancer_algorithm": "LB_OVERRIDE",
+        "endpoint_selection": "LOCAL_PREFERRED",
+        "healthcheck": [
+          {"tenant": "f5-amer-ent", "namespace": "j-granieri", "name": "www-hc-http"}
+        ]
+      },
+      "system_metadata": {"uid": "pool-www-origin"}
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "api-origin-pool",
+      "get_spec": {
+        "origin_servers": [
+          {"private_ip": {"ip": "10.0.1.20"}, "labels": {}},
+          {"private_ip": {"ip": "10.0.1.21"}, "labels": {}},
+          {"private_ip": {"ip": "10.0.1.22"}, "labels": {}}
+        ],
+        "use_tls": {"use_host_header_as_sni": {}, "tls_config": {"default_security": {}}},
+        "port": 8443,
+        "loadbalancer_algorithm": "LB_OVERRIDE_ROUND_ROBIN",
+        "healthcheck": [
+          {"tenant": "f5-amer-ent", "namespace": "j-granieri", "name": "api-hc-https"}
+        ]
+      },
+      "system_metadata": {"uid": "pool-api-origin"}
+    },
+    {
+      "tenant": "f5-amer-ent",
+      "namespace": "j-granieri",
+      "name": "legacy-origin-pool",
+      "get_spec": {
+        "origin_servers": [{"public_ip": {"ip": "198.51.100.5"}, "labels": {}}],
+        "no_tls": {},
+        "port": 80,
+        "loadbalancer_algorithm": "ROUND_ROBIN"
+      },
+      "system_metadata": {"uid": "pool-legacy-origin"}
+    }
+  ]
+}
