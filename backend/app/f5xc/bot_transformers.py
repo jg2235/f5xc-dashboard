@@ -15,9 +15,35 @@ fields for source-specific data.
 """
 from __future__ import annotations
 
+import json as _json
 import re
 from datetime import UTC, datetime
 from typing import Any
+
+
+def _parse_json_event(item: dict[str, Any] | str) -> dict[str, Any]:
+    """Ensure item is a dict — live API returns events as JSON strings."""
+    if isinstance(item, str):
+        try:
+            return _json.loads(item)
+        except _json.JSONDecodeError:
+            return {}
+    return item
+
+
+def _parse_asn(raw: str | int | None) -> int | None:
+    """Parse ASN from int or 'org name(number)' string format."""
+    if raw is None:
+        return None
+    if isinstance(raw, int):
+        return raw
+    m = re.search(r'\((\d+)\)', str(raw))
+    if m:
+        return int(m.group(1))
+    try:
+        return int(raw)
+    except (ValueError, TypeError):
+        return None
 
 # UA family extraction — collapses high-cardinality UA strings into ~12 buckets
 _UA_PATTERNS = [
@@ -118,15 +144,12 @@ def _action_normalize(raw: str | None) -> str:
     } else "ALLOW"
 
 
-def is_bot_event(item: dict[str, Any]) -> bool:
-    """Filter for security_events records that are actually bot events.
-
-    Used by sync_bot_events when iterating the same security_events feed
-    that sync_waf_events consumes. Returns True if the event has
-    bot_defense decision data.
-    """
+def is_bot_event(item: dict[str, Any] | str) -> bool:
+    """Filter for security_events records that are actually bot events."""
+    item = _parse_json_event(item)
     return bool(
-        item.get("bot_defense")
+        item.get("sec_event_type") == "bot_defense_sec_event"
+        or item.get("bot_defense")
         or item.get("bot_classification")
         or item.get("bot_category")
         or item.get("bot_score")
@@ -134,10 +157,14 @@ def is_bot_event(item: dict[str, Any]) -> bool:
 
 
 def extract_bot_event_from_security(
-    item: dict[str, Any], *, lb_namespace: str, lb_name: str,
+    item: dict[str, Any] | str, *, lb_namespace: str, lb_name: str,
 ) -> dict[str, Any] | None:
-    """Standard BD events arrive embedded in security_events responses."""
-    event_time = _parse_iso(item.get("event_time") or item.get("timestamp"))
+    """Standard BD events from app_security/events."""
+    item = _parse_json_event(item)
+    # Live API: "@timestamp"; fixtures: "event_time"
+    event_time = _parse_iso(
+        item.get("@timestamp") or item.get("event_time") or item.get("timestamp") or item.get("time")
+    )
     if event_time is None:
         return None
 
@@ -148,10 +175,12 @@ def extract_bot_event_from_security(
     action = _action_normalize(
         bot_block.get("action") or item.get("action") or "ALLOW"
     )
+    # Live API uses sec_event_name for the bot violation/category description
     bot_category = _normalize_bot_category(
         bot_block.get("bot_classification")
         or item.get("bot_classification")
-        or item.get("bot_category"),
+        or item.get("bot_category")
+        or item.get("sec_event_name"),
     )
     score = bot_block.get("bot_score") or item.get("bot_score")
     if isinstance(score, str):
@@ -165,15 +194,11 @@ def extract_bot_event_from_security(
     challenge_result = "not_issued"
     challenge_type = None
     if action == "CHALLENGE":
-        # Standard BD doesn't always tell us if the challenge passed; default to unknown
         ch = bot_block.get("challenge") or {}
         if isinstance(ch, dict):
             challenge_type = ch.get("type")
             outcome = ch.get("result")
-            if outcome:
-                challenge_result = str(outcome).lower()
-            else:
-                challenge_result = "abandoned"
+            challenge_result = str(outcome).lower() if outcome else "abandoned"
 
     bot_policy = item.get("bot_policy") or bot_block.get("policy") or {}
     if not isinstance(bot_policy, dict):
@@ -191,25 +216,30 @@ def extract_bot_event_from_security(
         "confidence_score": score,
         "challenge_result": challenge_result,
         "challenge_type": challenge_type,
-        "device_anomalies": None,  # Standard doesn't provide device telemetry
+        "device_anomalies": None,
         "source_ip": item.get("src_ip") or item.get("source_ip"),
-        "source_country": item.get("src_country") or item.get("source_country"),
-        "source_asn": item.get("src_asn") or item.get("source_asn"),
+        # Live API: "country"; fixtures: "src_country"
+        "source_country": item.get("country") or item.get("src_country") or item.get("source_country"),
+        "source_asn": _parse_asn(item.get("asn") or item.get("src_asn") or item.get("source_asn")),
         "method": item.get("method"),
-        "endpoint_path": (item.get("url") or "")[:2048] or None,
+        # Live API: "req_path"; fixtures: "url"
+        "endpoint_path": (item.get("req_path") or item.get("url") or "")[:2048] or None,
         "user_agent": (ua or "")[:512] or None,
         "ua_family": _ua_family(ua),
-        "bot_policy_namespace": bot_policy.get("namespace"),
-        "bot_policy_name": bot_policy.get("name"),
+        "bot_policy_namespace": bot_policy.get("namespace") or lb_namespace,
+        "bot_policy_name": bot_policy.get("name") or item.get("sec_event_name"),
         "raw_event": item,
     }
 
 
 def extract_bot_event_from_bda(
-    item: dict[str, Any], *, lb_namespace: str, lb_name: str,
+    item: dict[str, Any] | str, *, lb_namespace: str, lb_name: str,
 ) -> dict[str, Any] | None:
-    """BD-A bot_traffic events have richer fields directly on the item."""
-    event_time = _parse_iso(item.get("event_time") or item.get("timestamp"))
+    """BD-A events — richer fields when available."""
+    item = _parse_json_event(item)
+    event_time = _parse_iso(
+        item.get("@timestamp") or item.get("event_time") or item.get("timestamp") or item.get("time")
+    )
     if event_time is None:
         return None
 
@@ -265,10 +295,10 @@ def extract_bot_event_from_bda(
         "challenge_type": ch_type,
         "device_anomalies": anomalies,
         "source_ip": item.get("src_ip") or item.get("source_ip"),
-        "source_country": item.get("src_country") or item.get("source_country"),
-        "source_asn": item.get("src_asn") or item.get("source_asn"),
+        "source_country": item.get("country") or item.get("src_country") or item.get("source_country"),
+        "source_asn": _parse_asn(item.get("asn") or item.get("src_asn") or item.get("source_asn")),
         "method": item.get("method"),
-        "endpoint_path": (item.get("url") or item.get("endpoint") or "")[:2048] or None,
+        "endpoint_path": (item.get("req_path") or item.get("url") or item.get("endpoint") or "")[:2048] or None,
         "user_agent": (ua or "")[:512] or None,
         "ua_family": _ua_family(ua),
         "bot_policy_namespace": bot_policy.get("namespace"),

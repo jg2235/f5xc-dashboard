@@ -149,13 +149,13 @@ class Settings(BaseSettings):
     # WAF analytics (slice 4)
     waf_event_window_minutes: int = Field(default=10)
     waf_metrics_window_minutes: int = Field(default=10)
-    waf_max_events_per_cycle: int = Field(default=5000)
+    waf_max_events_per_cycle: int = Field(default=500)
     waf_topk_size: int = Field(default=12)
 
     # Bot analytics (slice 5)
     bot_event_window_minutes: int = Field(default=10)
     bot_metrics_window_minutes: int = Field(default=10)
-    bot_max_events_per_cycle: int = Field(default=5000)
+    bot_max_events_per_cycle: int = Field(default=500)
     bot_topk_size: int = Field(default=12)
 
     # API analytics (slice 6)

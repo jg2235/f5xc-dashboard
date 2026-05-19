@@ -9,6 +9,8 @@ Wraps the f5xc-api skill patterns:
 from __future__ import annotations
 
 import json
+import re
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -194,28 +196,27 @@ class F5XCClient:
                 candidates.append(self.FIXTURES_DIR / f"{url_segment}_default.json")
 
         # Slice 4 patterns
-        if clean_path.endswith("/app/security_events"):
-            # POST with body filter: { lb_name, namespace, ... }
+        if clean_path.endswith("/app_security/events"):
             body = json_body or {}
-            lb = body.get("lb_name") or "all"
-            candidates.append(self.FIXTURES_DIR / f"security_events__{lb}.json")
-            candidates.append(self.FIXTURES_DIR / "security_events_default.json")
-        elif "/metrics/multi_v2" in clean_path:
+            # Derive lb name from vh_name (ves-io-http-loadbalancer-{lb}) or lb_name
+            vh = body.get("vh_name") or ""
+            lb = vh.removeprefix("ves-io-http-loadbalancer-") if vh else body.get("lb_name") or "all"
+            if body.get("sec_event_type") == "bot_defense_sec_event":
+                candidates.append(self.FIXTURES_DIR / f"bot_traffic__{lb}.json")
+                candidates.append(self.FIXTURES_DIR / "bot_traffic_default.json")
+            else:
+                candidates.append(self.FIXTURES_DIR / f"security_events__{lb}.json")
+                candidates.append(self.FIXTURES_DIR / "security_events_default.json")
+        elif clean_path.endswith("/app_security/metrics"):
             body = json_body or {}
-            lb = body.get("lb_name") or "all"
-            # Slice 6 — API per-endpoint metrics also use this URL but with
-            # group_by=["method","endpoint"]. Route to api_metrics fixtures.
+            vh = body.get("vh_name") or ""
+            lb = vh.removeprefix("ves-io-http-loadbalancer-") if vh else body.get("lb_name") or "all"
             if body.get("group_by"):
                 candidates.append(self.FIXTURES_DIR / f"api_metrics__{lb}.json")
                 candidates.append(self.FIXTURES_DIR / "api_metrics_default.json")
             else:
                 candidates.append(self.FIXTURES_DIR / f"metrics_multi__{lb}.json")
                 candidates.append(self.FIXTURES_DIR / "metrics_multi_default.json")
-        elif clean_path.endswith("/app/bot_traffic"):
-            body = json_body or {}
-            lb = body.get("lb_name") or "all"
-            candidates.append(self.FIXTURES_DIR / f"bot_traffic__{lb}.json")
-            candidates.append(self.FIXTURES_DIR / "bot_traffic_default.json")
         elif clean_path.endswith("/api_endpoints"):
             # Slice 6 — per-LB discovered endpoints inventory
             # /api/data/namespaces/{ns}/http_loadbalancers/{lb}/api_endpoints
@@ -238,12 +239,51 @@ class F5XCClient:
             candidates.append(self.FIXTURES_DIR / f"api_discovery_state__{lb}.json")
             candidates.append(self.FIXTURES_DIR / "api_discovery_state_default.json")
 
+        _TIMESERIES_PATHS = ("app_security/metrics", "app_security/events")
+        is_timeseries = any(seg in clean_path for seg in _TIMESERIES_PATHS) or (
+            json_body and json_body.get("group_by") and "metrics" in clean_path
+        )
+
         for fixture in candidates:
             if fixture.exists():
-                return json.loads(fixture.read_text())
+                raw = fixture.read_text()
+                if is_timeseries:
+                    raw = self._rebase_fixture_times(raw, json_body)
+                return json.loads(raw)
 
         log.warning("f5xc_mock_fixture_missing", path=path, params=params, tried=[str(c) for c in candidates])
         return {"items": []} if "events" in clean_path else {"data": []}
+
+    @staticmethod
+    def _rebase_fixture_times(raw: str, json_body: dict[str, Any] | None) -> str:
+        """Shift all ISO-8601 timestamps in a fixture string so the latest one
+        aligns with the query's end_time (or now).  Keeps mock data inside the
+        default 24-hour analytics window regardless of when fixtures were authored.
+        """
+        _ISO_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
+        matches = _ISO_RE.findall(raw)
+        if not matches:
+            return raw
+
+        max_ts = max(datetime.fromisoformat(m.replace("Z", "+00:00")) for m in matches)
+
+        if json_body and json_body.get("end_time"):
+            try:
+                anchor = datetime.fromisoformat(
+                    json_body["end_time"].replace("Z", "+00:00")
+                )
+            except ValueError:
+                anchor = datetime.now(UTC).replace(second=0, microsecond=0)
+        else:
+            anchor = datetime.now(UTC).replace(second=0, microsecond=0)
+
+        shift: timedelta = anchor - max_ts
+
+        def _shift_match(m: re.Match[str]) -> str:
+            ts = datetime.fromisoformat(m.group().replace("Z", "+00:00"))
+            return (ts + shift).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        return _ISO_RE.sub(_shift_match, raw)
 
     @staticmethod
     def _extract_namespace(path: str) -> str | None:
@@ -420,25 +460,26 @@ class F5XCClient:
         *,
         start_time: str,
         end_time: str,
-        max_events: int = 1000,
+        max_events: int = 500,
         namespace: str | None = None,
     ) -> dict[str, Any]:
-        """POST /api/data/namespaces/{ns}/app/security_events.
+        """POST /api/data/namespaces/{ns}/app_security/events.
 
-        F5 XC uses a JSON body on POST for time-windowed event queries.
-        Returns `{"events": [...]}`.
+        Returns `{"events": [json_string, ...], "total_hits": "N", ...}`.
+        Each event is a JSON-encoded string; callers must json.loads() each entry.
         """
         ns = namespace or self.namespace
+        vh_name = f"ves-io-http-loadbalancer-{lb_name}"
         body = {
             "namespace": ns,
-            "lb_name": lb_name,
+            "vh_name": vh_name,
             "start_time": start_time,
             "end_time": end_time,
             "limit": max_events,
         }
         return self._request(
             "POST",
-            f"/api/data/namespaces/{ns}/app/security_events",
+            f"/api/data/namespaces/{ns}/app_security/events",
             json=body,
         )
 
@@ -451,28 +492,22 @@ class F5XCClient:
         step: str = "60s",
         namespace: str | None = None,
     ) -> dict[str, Any]:
-        """POST /api/data/namespaces/{ns}/metrics/multi_v2.
+        """POST /api/data/namespaces/{ns}/app_security/metrics.
 
-        Returns time-series for request_count / blocked_count / monitored_count /
-        error_count, bucketed at `step`.
+        Returns time-series WAF/security metrics bucketed at `step`.
         """
         ns = namespace or self.namespace
+        vh_name = f"ves-io-http-loadbalancer-{lb_name}"
         body = {
             "namespace": ns,
-            "lb_name": lb_name,
+            "vh_name": vh_name,
             "start_time": start_time,
             "end_time": end_time,
             "step": step,
-            "metric_names": [
-                "loadbalancer.request_count",
-                "loadbalancer.waf_blocked_count",
-                "loadbalancer.waf_monitored_count",
-                "loadbalancer.error_count",
-            ],
         }
         return self._request(
             "POST",
-            f"/api/data/namespaces/{ns}/metrics/multi_v2",
+            f"/api/data/namespaces/{ns}/app_security/metrics",
             json=body,
         )
 
@@ -485,26 +520,27 @@ class F5XCClient:
         *,
         start_time: str,
         end_time: str,
-        max_events: int = 1000,
+        max_events: int = 500,
         namespace: str | None = None,
     ) -> dict[str, Any]:
-        """POST /api/data/namespaces/{ns}/app/bot_traffic.
+        """POST /api/data/namespaces/{ns}/app_security/events (bot_defense filter).
 
-        Bot Defense Advanced (BD-A) telemetry endpoint. Returns rich per-event
-        bot decision data — challenge result, confidence score, device anomalies,
-        bot category. Standard BD events come through get_security_events() instead.
+        bot_defense_sec_event records share the app_security/events endpoint.
+        Returns same shape as get_security_events(); callers filter by sec_event_type.
         """
         ns = namespace or self.namespace
+        vh_name = f"ves-io-http-loadbalancer-{lb_name}"
         body = {
             "namespace": ns,
-            "lb_name": lb_name,
+            "vh_name": vh_name,
+            "sec_event_type": "bot_defense_sec_event",
             "start_time": start_time,
             "end_time": end_time,
             "limit": max_events,
         }
         return self._request(
             "POST",
-            f"/api/data/namespaces/{ns}/app/bot_traffic",
+            f"/api/data/namespaces/{ns}/app_security/events",
             json=body,
         )
 
@@ -577,7 +613,7 @@ class F5XCClient:
         }
         return self._request(
             "POST",
-            f"/api/data/namespaces/{ns}/metrics/multi_v2",
+            f"/api/data/namespaces/{ns}/app_security/metrics",
             json=body,
         )
 
