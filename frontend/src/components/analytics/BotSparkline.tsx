@@ -61,7 +61,7 @@ export function BotSparkline({
           />
           <Tooltip
             contentStyle={{
-              background: "#ffffff",
+              background: "#0d1520",
               border: "1px solid #2a3142",
               borderRadius: 6,
               fontSize: 11,
@@ -116,7 +116,7 @@ export function BotSparkline({
         />
         <Tooltip
           contentStyle={{
-            background: "#ffffff",
+            background: "#0d1520",
             border: "1px solid #2a3142",
             borderRadius: 6,
             fontSize: 11,

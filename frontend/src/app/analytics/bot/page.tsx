@@ -367,11 +367,11 @@ function BotDonutCard({
                 {!empty && (
                   <Tooltip
                     contentStyle={{
-                      background: "#ffffff",
-                      border: "1px solid #d1d9e0",
+                      background: "#0d1520",
+                      border: "1px solid #1a2940",
                       borderRadius: "4px",
                       fontSize: "11px",
-                      color: "#102a43",
+                      color: "#e2f0ff",
                     }}
                     formatter={(value: number, name: string) => [value, name]}
                   />
