@@ -306,7 +306,7 @@ function BotTopKCard({
   );
 }
 
-const DONUT_FALLBACK_COLORS = ["#475569", "#334155", "#1e293b", "#0f172a"];
+const DONUT_FALLBACK_COLORS = ["#9aa5b4", "#cbd5e0", "#e2e8f0", "#f0f4f8"];
 
 function BotDonutCard({
   dim,
@@ -352,7 +352,7 @@ function BotDonutCard({
             <ResponsiveContainer width="100%" height={130}>
               <PieChart>
                 <Pie
-                  data={empty ? [{ name: "none", value: 1, fill: "#1e293b" }] : chartData}
+                  data={empty ? [{ name: "none", value: 1, fill: "#e8edf2" }] : chartData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
@@ -360,18 +360,18 @@ function BotDonutCard({
                   dataKey="value"
                   strokeWidth={0}
                 >
-                  {(empty ? [{ fill: "#1e293b" }] : chartData).map((entry, i) => (
+                  {(empty ? [{ fill: "#e8edf2" }] : chartData).map((entry, i) => (
                     <Cell key={i} fill={entry.fill} />
                   ))}
                 </Pie>
                 {!empty && (
                   <Tooltip
                     contentStyle={{
-                      background: "#1a1f2e",
-                      border: "1px solid #2d3347",
+                      background: "#ffffff",
+                      border: "1px solid #d1d9e0",
                       borderRadius: "4px",
                       fontSize: "11px",
-                      color: "#e2e8f0",
+                      color: "#102a43",
                     }}
                     formatter={(value: number, name: string) => [value, name]}
                   />

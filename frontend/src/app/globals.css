@@ -10,8 +10,8 @@
 
 html,
 body {
-  background: #0a0d12;
-  color: #dde2eb;
+  background: #f0f4f8;
+  color: #102a43;
   font-family: var(--font-sans);
   font-feature-settings: "cv11", "ss01", "ss03";
   -webkit-font-smoothing: antialiased;
@@ -20,8 +20,8 @@ body {
 /* Subtle grid backdrop for dashboard framing */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -31,14 +31,14 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f1319;
+  background: #e8edf2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a3142;
+  background: #9aa5b4;
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3d4558;
+  background: #627d98;
 }
 
 /* Status pulse animation for critical/expired cells */

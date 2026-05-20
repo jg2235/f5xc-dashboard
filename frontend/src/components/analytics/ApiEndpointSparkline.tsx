@@ -90,7 +90,7 @@ export function ApiEndpointSparkline({
         />
         <Tooltip
           contentStyle={{
-            background: "#161b24",
+            background: "#ffffff",
             border: "1px solid #2a3142",
             borderRadius: 6,
             fontSize: 11,
