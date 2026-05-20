@@ -239,8 +239,8 @@ class F5XCClient:
             candidates.append(self.FIXTURES_DIR / f"api_discovery_state__{lb}.json")
             candidates.append(self.FIXTURES_DIR / "api_discovery_state_default.json")
 
-        _TIMESERIES_PATHS = ("app_security/metrics", "app_security/events")
-        is_timeseries = any(seg in clean_path for seg in _TIMESERIES_PATHS) or (
+        timeseries_paths = ("app_security/metrics", "app_security/events")
+        is_timeseries = any(seg in clean_path for seg in timeseries_paths) or (
             json_body and json_body.get("group_by") and "metrics" in clean_path
         )
 
@@ -260,8 +260,8 @@ class F5XCClient:
         aligns with the query's end_time (or now).  Keeps mock data inside the
         default 24-hour analytics window regardless of when fixtures were authored.
         """
-        _ISO_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
-        matches = _ISO_RE.findall(raw)
+        iso_re = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
+        matches = iso_re.findall(raw)
         if not matches:
             return raw
 
@@ -283,7 +283,7 @@ class F5XCClient:
             ts = datetime.fromisoformat(m.group().replace("Z", "+00:00"))
             return (ts + shift).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        return _ISO_RE.sub(_shift_match, raw)
+        return iso_re.sub(_shift_match, raw)
 
     @staticmethod
     def _extract_namespace(path: str) -> str | None:

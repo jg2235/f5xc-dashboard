@@ -18,14 +18,13 @@ from datetime import UTC, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import desc, distinct, func, select
+from sqlalchemy import case, desc, distinct, func, select
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
 from app.config import get_settings
 from app.db import get_db
 from app.models import BotEvent, LoadBalancer, User
-from sqlalchemy import case
 from app.schemas.bot import (
     BotEndpointStats,
     BotEventSummary,
