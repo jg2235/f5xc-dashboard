@@ -2,16 +2,14 @@
 
 Per cycle:
   1. For each tenant, list LBs with has_waf=True.
-  2. For each such LB, query security_events for [now - waf_event_window_minutes, now].
-  3. Insert into waf_events. Conflicts (same event_time + id) ignored.
-  4. Circuit breaker: if a single LB returns ≥ waf_max_events_per_cycle,
-     log a warning but ingest what we got.
-
-Idempotency: F5 XC events have a stable id we use as part of the PK; rerunning
-the task within the same window deduplicates naturally.
+  2. For each such LB, query app_security/events for [now - waf_event_window_minutes, now].
+  3. Insert into waf_events. Conflicts on (event_time, id) deduplicate correctly
+     because id is derived from req_id, not a fresh uuid4().
+  4. Circuit breaker: if a single LB returns ≥ waf_max_events_per_cycle, log a warning.
 """
 from __future__ import annotations
 
+import hashlib
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -19,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from app.config import get_settings
+from app.f5xc.bot_transformers import _parse_json_event
 from app.f5xc.client import F5XCClient, F5XCError
 from app.f5xc.waf_transformers import extract_waf_event_fields
 from app.logging_config import get_logger
@@ -31,6 +30,22 @@ log = get_logger(__name__)
 
 def _iso_z(dt: datetime) -> str:
     return dt.astimezone(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _stable_id(raw: dict) -> uuid.UUID:
+    """Derive a stable UUID from req_id so re-syncing the same window
+    never creates duplicate rows."""
+    req_id = raw.get("req_id") or raw.get("request_id")
+    if req_id:
+        try:
+            return uuid.UUID(str(req_id))
+        except (ValueError, AttributeError):
+            pass
+    key = "|".join(
+        str(raw.get(k, ""))
+        for k in ("@timestamp", "src_ip", "req_path", "method", "vh_name")
+    )
+    return uuid.UUID(hashlib.sha1(key.encode()).hexdigest()[:32])
 
 
 @celery_app.task(name="app.workers.tasks.sync_waf_events.sync_waf_events")
@@ -94,18 +109,17 @@ def sync_waf_events() -> dict:
 
                     inserted_for_lb = 0
                     for raw in events:
+                        event_dict = _parse_json_event(raw)
                         fields = extract_waf_event_fields(
-                            raw, lb_namespace=lb.namespace, lb_name=lb.name
+                            event_dict, lb_namespace=lb.namespace, lb_name=lb.name
                         )
                         if fields is None:
                             continue
                         stmt = insert(WafEvent).values(
-                            id=uuid.uuid4(),
+                            id=_stable_id(event_dict),
                             tenant_id=tenant.id,
                             **fields,
                         )
-                        # PK is (event_time, id). uuid4 makes collisions effectively zero,
-                        # so ON CONFLICT DO NOTHING is just defensive.
                         stmt = stmt.on_conflict_do_nothing(
                             index_elements=["event_time", "id"]
                         )
@@ -114,10 +128,7 @@ def sync_waf_events() -> dict:
 
                     total_inserted += inserted_for_lb
                     total_lbs += 1
-                    log.debug(
-                        "waf_events_lb_done",
-                        lb=lb.name, count=inserted_for_lb,
-                    )
+                    log.debug("waf_events_lb_done", lb=lb.name, count=inserted_for_lb)
 
     log.info("sync_waf_events_complete", inserted=total_inserted, lbs=total_lbs)
     return {"inserted": total_inserted, "lbs": total_lbs}
