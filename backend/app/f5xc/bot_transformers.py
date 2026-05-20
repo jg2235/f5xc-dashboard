@@ -101,6 +101,7 @@ def _normalize_bot_category(raw: str | None) -> str:
     r = raw.strip().lower().replace("-", "_").replace(" ", "_")
     # F5 XC uses these labels on BD-A:
     aliases = {
+        # BD-A labels
         "search_engine_bot": "search_engine",
         "good": "good_bot",
         "bad": "bad_bot",
@@ -111,6 +112,21 @@ def _normalize_bot_category(raw: str | None) -> str:
         "automated_browser": "automation",
         "headless_browser": "automation",
         "scraping_bot": "scraper",
+        # Live API: bot_defense.automation_type values
+        "token_missing": "bad_bot",
+        "automation_tools": "automation",
+        "credential_stuffing": "bad_bot",
+        "account_takeover": "bad_bot",
+        "web_scraper": "scraper",
+        "web_scraping": "scraper",
+        "data_center": "data_center",
+        # Live API: bot_defense.insight values
+        "malicious": "bad_bot",
+        "benign": "good_bot",
+        "suspicious": "suspicious",
+        "good_bot": "good_bot",
+        # sec_event_name fallback
+        "bot_defense_violation": "bad_bot",
     }
     r = aliases.get(r, r)
     return r if r in _VALID_BOT_CATEGORIES else "unknown"
@@ -175,9 +191,11 @@ def extract_bot_event_from_security(
     action = _action_normalize(
         bot_block.get("action") or item.get("action") or "ALLOW"
     )
-    # Live API uses sec_event_name for the bot violation/category description
+    # Live API: automation_type (e.g. "Token Missing") and insight ("MALICIOUS")
     bot_category = _normalize_bot_category(
         bot_block.get("bot_classification")
+        or bot_block.get("automation_type")
+        or bot_block.get("insight")
         or item.get("bot_classification")
         or item.get("bot_category")
         or item.get("sec_event_name"),

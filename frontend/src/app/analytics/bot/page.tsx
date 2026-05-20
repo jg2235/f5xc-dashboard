@@ -5,6 +5,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { api, type BotTopKDim } from "@/lib/api";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { Shell } from "@/components/ui/Shell";
@@ -111,6 +112,39 @@ export default function BotAnalyticsPage() {
               overview.data && overview.data.challenge_rate_pct > 10 ? "warn" : "ok"
             }
           />
+        </div>
+
+        {/* Highlights */}
+        <div className="mb-6">
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-carbon-300">
+            Highlights
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <BotDonutCard
+              dim="bot_category"
+              title="Traffic by Category"
+              primaryColor="#be185d"
+              hours={hours}
+            />
+            <BotDonutCard
+              dim="action"
+              title="Traffic by Action"
+              primaryColor="#f59e0b"
+              hours={hours}
+            />
+            <BotDonutCard
+              dim="lb_name"
+              title="Protected Apps"
+              primaryColor="#6366f1"
+              hours={hours}
+            />
+            <BotDonutCard
+              dim="ua_family"
+              title="Top UA Families"
+              primaryColor="#06b6d4"
+              hours={hours}
+            />
+          </div>
         </div>
 
         {/* Sparkline */}
@@ -266,6 +300,110 @@ function BotTopKCard({
           <div className="py-3 text-center text-xs text-carbon-300">Loading…</div>
         ) : (
           <WafTopKWidget entries={q.data?.entries ?? []} tone={tone} />
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+const DONUT_FALLBACK_COLORS = ["#475569", "#334155", "#1e293b", "#0f172a"];
+
+function BotDonutCard({
+  dim,
+  title,
+  primaryColor,
+  hours,
+}: {
+  dim: BotTopKDim;
+  title: string;
+  primaryColor: string;
+  hours: number;
+}) {
+  const q = useQuery({
+    queryKey: ["bot-topk-donut", dim, hours],
+    queryFn: () => api.botTopK({ dim, hours }),
+    refetchInterval: 60_000,
+  });
+
+  const entries = q.data?.entries ?? [];
+  const total = entries.reduce((s, e) => s + e.count, 0);
+  const chartData = entries.slice(0, 5).map((e, i) => ({
+    name: e.key.replace(/_/g, " "),
+    value: e.count,
+    fill: i === 0 ? primaryColor : (DONUT_FALLBACK_COLORS[i - 1] ?? "#0f172a"),
+  }));
+  const empty = chartData.length === 0;
+
+  return (
+    <Card>
+      <CardBody>
+        <div className="mb-0.5 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+          {title}
+        </div>
+        <div className="mb-0.5 font-mono text-[9px] text-carbon-400">Total Traffic</div>
+        <div className="mb-3 font-display text-2xl font-bold text-carbon-100">{total}</div>
+
+        {q.isLoading ? (
+          <div className="flex h-36 items-center justify-center text-xs text-carbon-400">
+            Loading…
+          </div>
+        ) : (
+          <>
+            <ResponsiveContainer width="100%" height={130}>
+              <PieChart>
+                <Pie
+                  data={empty ? [{ name: "none", value: 1, fill: "#1e293b" }] : chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={60}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {(empty ? [{ fill: "#1e293b" }] : chartData).map((entry, i) => (
+                    <Cell key={i} fill={entry.fill} />
+                  ))}
+                </Pie>
+                {!empty && (
+                  <Tooltip
+                    contentStyle={{
+                      background: "#1a1f2e",
+                      border: "1px solid #2d3347",
+                      borderRadius: "4px",
+                      fontSize: "11px",
+                      color: "#e2e8f0",
+                    }}
+                    formatter={(value: number, name: string) => [value, name]}
+                  />
+                )}
+              </PieChart>
+            </ResponsiveContainer>
+
+            {!empty && (
+              <div className="mt-2 space-y-1 border-t border-carbon-700 pt-2">
+                <div className="flex justify-between font-mono text-[9px] uppercase tracking-wider text-carbon-400">
+                  <span>Category</span>
+                  <span>Total</span>
+                </div>
+                {chartData.map((e, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      <div
+                        className="h-2 w-2 shrink-0 rounded-sm"
+                        style={{ background: e.fill }}
+                      />
+                      <span className="truncate font-mono text-[10px] capitalize text-carbon-200">
+                        {e.name}
+                      </span>
+                    </div>
+                    <span className="ml-2 shrink-0 font-mono text-[10px] text-carbon-100">
+                      {e.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </CardBody>
     </Card>

@@ -24,7 +24,8 @@ from sqlalchemy.orm import Session
 from app.auth.dependencies import get_current_user
 from app.config import get_settings
 from app.db import get_db
-from app.models import BotEvent, BotMetric1Min, LoadBalancer, User
+from app.models import BotEvent, LoadBalancer, User
+from sqlalchemy import case
 from app.schemas.bot import (
     BotEndpointStats,
     BotEventSummary,
@@ -74,14 +75,14 @@ def bot_overview(
     start = end - timedelta(minutes=window_minutes)
     row = db.execute(
         select(
-            func.coalesce(func.sum(BotMetric1Min.request_count), 0).label("req"),
-            func.coalesce(func.sum(BotMetric1Min.challenge_count), 0).label("chal"),
-            func.coalesce(func.sum(BotMetric1Min.block_count), 0).label("blk"),
-            func.coalesce(func.sum(BotMetric1Min.allow_count), 0).label("allw"),
+            func.coalesce(func.count(), 0).label("req"),
+            func.coalesce(func.sum(case((BotEvent.action == "CHALLENGE", 1), else_=0)), 0).label("chal"),
+            func.coalesce(func.sum(case((BotEvent.action == "BLOCK", 1), else_=0)), 0).label("blk"),
+            func.coalesce(func.sum(case((BotEvent.action == "ALLOW", 1), else_=0)), 0).label("allw"),
         ).where(
-            BotMetric1Min.tenant_id == user.tenant_id,
-            BotMetric1Min.bucket_time >= start,
-            BotMetric1Min.bucket_time <= end,
+            BotEvent.tenant_id == user.tenant_id,
+            BotEvent.event_time >= start,
+            BotEvent.event_time <= end,
         )
     ).one()
     req, chal, blk, allw = int(row.req), int(row.chal), int(row.blk), int(row.allw)
@@ -110,29 +111,29 @@ def bot_sparkline(
     lb = _resolve_lb(db, user, lb_id)
 
     bucket_expr = func.to_timestamp(
-        func.floor(func.extract("epoch", BotMetric1Min.bucket_time) / 300) * 300
+        func.floor(func.extract("epoch", BotEvent.event_time) / 300) * 300
     ).label("b5")
 
     stmt = (
         select(
             bucket_expr,
-            func.sum(BotMetric1Min.request_count).label("req"),
-            func.sum(BotMetric1Min.challenge_count).label("chal"),
-            func.sum(BotMetric1Min.block_count).label("blk"),
-            func.sum(BotMetric1Min.allow_count).label("allw"),
+            func.count().label("req"),
+            func.sum(case((BotEvent.action == "CHALLENGE", 1), else_=0)).label("chal"),
+            func.sum(case((BotEvent.action == "BLOCK", 1), else_=0)).label("blk"),
+            func.sum(case((BotEvent.action == "ALLOW", 1), else_=0)).label("allw"),
         )
         .where(
-            BotMetric1Min.tenant_id == user.tenant_id,
-            BotMetric1Min.bucket_time >= start,
-            BotMetric1Min.bucket_time <= end,
+            BotEvent.tenant_id == user.tenant_id,
+            BotEvent.event_time >= start,
+            BotEvent.event_time <= end,
         )
         .group_by(bucket_expr)
         .order_by(bucket_expr)
     )
     if lb is not None:
         stmt = stmt.where(
-            BotMetric1Min.lb_namespace == lb.namespace,
-            BotMetric1Min.lb_name == lb.name,
+            BotEvent.lb_namespace == lb.namespace,
+            BotEvent.lb_name == lb.name,
         )
 
     rows = db.execute(stmt).all()
