@@ -17,13 +17,13 @@ from datetime import UTC, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import desc, func, select
+from sqlalchemy import case, desc, func, select
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
 from app.config import get_settings
 from app.db import get_db
-from app.models import LoadBalancer, User, WafEvent, WafMetric1Min
+from app.models import LoadBalancer, User, WafEvent
 from app.schemas.waf import (
     TopKEntry,
     WafEventSummary,
@@ -65,14 +65,14 @@ def waf_overview(
     start = end - timedelta(minutes=window_minutes)
     row = db.execute(
         select(
-            func.coalesce(func.sum(WafMetric1Min.request_count), 0).label("req"),
-            func.coalesce(func.sum(WafMetric1Min.blocked_count), 0).label("blk"),
-            func.coalesce(func.sum(WafMetric1Min.monitored_count), 0).label("mon"),
-            func.coalesce(func.sum(WafMetric1Min.error_count), 0).label("err"),
+            func.coalesce(func.count(), 0).label("req"),
+            func.coalesce(func.sum(case((WafEvent.action == "BLOCK", 1), else_=0)), 0).label("blk"),
+            func.coalesce(func.sum(case((WafEvent.action == "MONITOR", 1), else_=0)), 0).label("mon"),
+            func.coalesce(func.sum(case((WafEvent.action == "ALLOW", 1), else_=0)), 0).label("err"),
         ).where(
-            WafMetric1Min.tenant_id == user.tenant_id,
-            WafMetric1Min.bucket_time >= start,
-            WafMetric1Min.bucket_time <= end,
+            WafEvent.tenant_id == user.tenant_id,
+            WafEvent.event_time >= start,
+            WafEvent.event_time <= end,
         )
     ).one()
     req, blk, mon, err = int(row.req), int(row.blk), int(row.mon), int(row.err)
@@ -99,32 +99,30 @@ def waf_sparkline(
 
     lb = _resolve_lb(db, user, lb_id)
 
-    # Bucket the 1-min rollups into 5-min windows for the sparkline shape.
-    # date_trunc-then-floor: bucket = to_timestamp(floor(extract(epoch)/300)*300).
     bucket_expr = func.to_timestamp(
-        func.floor(func.extract("epoch", WafMetric1Min.bucket_time) / 300) * 300
+        func.floor(func.extract("epoch", WafEvent.event_time) / 300) * 300
     ).label("b5")
 
     stmt = (
         select(
             bucket_expr,
-            func.sum(WafMetric1Min.request_count).label("req"),
-            func.sum(WafMetric1Min.blocked_count).label("blk"),
-            func.sum(WafMetric1Min.monitored_count).label("mon"),
-            func.sum(WafMetric1Min.error_count).label("err"),
+            func.count().label("req"),
+            func.sum(case((WafEvent.action == "BLOCK", 1), else_=0)).label("blk"),
+            func.sum(case((WafEvent.action == "MONITOR", 1), else_=0)).label("mon"),
+            func.sum(case((WafEvent.action == "ALLOW", 1), else_=0)).label("err"),
         )
         .where(
-            WafMetric1Min.tenant_id == user.tenant_id,
-            WafMetric1Min.bucket_time >= start,
-            WafMetric1Min.bucket_time <= end,
+            WafEvent.tenant_id == user.tenant_id,
+            WafEvent.event_time >= start,
+            WafEvent.event_time <= end,
         )
         .group_by(bucket_expr)
         .order_by(bucket_expr)
     )
     if lb is not None:
         stmt = stmt.where(
-            WafMetric1Min.lb_namespace == lb.namespace,
-            WafMetric1Min.lb_name == lb.name,
+            WafEvent.lb_namespace == lb.namespace,
+            WafEvent.lb_name == lb.name,
         )
 
     rows = db.execute(stmt).all()
