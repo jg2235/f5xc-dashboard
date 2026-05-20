@@ -21,11 +21,11 @@ export function StatCard({
 
   return (
     <div className="rounded-lg border border-carbon-600 bg-carbon-800/60 p-5">
-      <div className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-carbon-300">
+      <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-carbon-400">
         {label}
       </div>
-      <div className={cn("mt-2 font-display text-3xl font-semibold tabular-nums", toneClass)}>{value}</div>
-      {sub && <div className="mt-1 text-xs text-carbon-300">{sub}</div>}
+      <div className={cn("mt-2 font-display text-4xl font-bold tabular-nums", toneClass)}>{value}</div>
+      {sub && <div className="mt-1 text-sm font-medium text-carbon-400">{sub}</div>}
     </div>
   );
 }
