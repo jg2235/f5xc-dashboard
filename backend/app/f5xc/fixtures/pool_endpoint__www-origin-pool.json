@@ -1,0 +1,52 @@
+{
+  "metadata": {"name": "ves-io-origin-pool-www-origin-pool", "namespace": "j-granieri"},
+  "spec": {},
+  "status": [
+    {
+      "metadata": {"creator_id": "ny8-nyc", "uid": "aaa111"},
+      "ver_status": [
+        {
+          "site": "ny8-nyc",
+          "discovered_ip": {"ipv4": {"addr": "203.0.113.10"}},
+          "discovered_port": 8080,
+          "health_status": {"origin-1": "HEALTHY"},
+          "health_check_details": [
+            {"health_status": "HEALTHY", "health_status_update_time": "2026-06-05T10:00:00Z", "health_status_failure_reason": ""}
+          ]
+        },
+        {
+          "site": "ny8-nyc",
+          "discovered_ip": {"ipv4": {"addr": "203.0.113.11"}},
+          "discovered_port": 8080,
+          "health_status": {"origin-2": "HEALTHY"},
+          "health_check_details": [
+            {"health_status": "HEALTHY", "health_status_update_time": "2026-06-05T10:00:00Z", "health_status_failure_reason": ""}
+          ]
+        }
+      ]
+    },
+    {
+      "metadata": {"creator_id": "sv10-sjc", "uid": "bbb222"},
+      "ver_status": [
+        {
+          "site": "sv10-sjc",
+          "discovered_ip": {"ipv4": {"addr": "203.0.113.10"}},
+          "discovered_port": 8080,
+          "health_status": {"origin-1": "HEALTHY"},
+          "health_check_details": [
+            {"health_status": "HEALTHY", "health_status_update_time": "2026-06-05T10:00:00Z", "health_status_failure_reason": ""}
+          ]
+        },
+        {
+          "site": "sv10-sjc",
+          "discovered_ip": {"ipv4": {"addr": "203.0.113.11"}},
+          "discovered_port": 8080,
+          "health_status": {"origin-2": "UNHEALTHY"},
+          "health_check_details": [
+            {"health_status": "UNHEALTHY", "health_status_update_time": "2026-06-05T10:00:00Z", "health_status_failure_reason": "connection_failure"}
+          ]
+        }
+      ]
+    }
+  ]
+}

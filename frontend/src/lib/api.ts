@@ -108,6 +108,23 @@ export type PoolStats = {
   warning_cells: number;
 };
 
+export type ReSiteEntry = {
+  site_name: string;
+  site_type: string;
+  classified_status: OriginStatus;
+  healthy_origins: number;
+  total_origins: number;
+  last_probe_at: string | null;
+  failure_reasons: string[];
+};
+
+export type PoolReHealthRow = {
+  pool_id: string;
+  pool_name: string;
+  pool_namespace: string;
+  re_sites: ReSiteEntry[];
+};
+
 export type CurrentUser = {
   id: string;
   username: string;
@@ -686,6 +703,9 @@ export const api = {
   listPools: () => request<OriginPoolSummary[]>("/pools"),
   poolStats: () => request<PoolStats>("/pools/stats"),
   getPool: (id: string) => request<OriginPoolDetail>(`/pools/${id}`),
+  poolReHealth: () => request<PoolReHealthRow[]>("/pools/re-health"),
+  triggerPoolReHealthSync: () =>
+    request<Record<string, unknown>>("/sync/pool-re-health", { method: "POST" }),
 
   // Policies (slice 3)
   policyStats: () => request<PolicyStats>("/policies/stats"),

@@ -7,10 +7,13 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ChevronLeft } from "lucide-react";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/useRequireAuth";
+import { Radio } from "lucide-react";
 import { Shell } from "@/components/ui/Shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { HealthMatrix } from "@/components/ui/HealthMatrix";
+import { PoolReHealthInline } from "@/components/ui/PoolReHealthGrid";
+import type { PoolReHealthRow } from "@/lib/api";
 
 export default function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const ready = useRequireAuth();
@@ -20,6 +23,12 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
     queryFn: () => api.getPool(id),
     enabled: ready,
     refetchInterval: 30_000,
+  });
+  const reHealth = useQuery({
+    queryKey: ["pool-re-health"],
+    queryFn: api.poolReHealth,
+    enabled: ready,
+    refetchInterval: 60_000,
   });
 
   if (!ready) return null;
@@ -42,6 +51,7 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
 
   const p = pool.data;
   const totalCells = p.healthy_count + p.unhealthy_count + p.warning_count;
+  const reRow: PoolReHealthRow | undefined = reHealth.data?.find((r) => r.pool_id === id);
 
   return (
     <Shell>
@@ -77,9 +87,22 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
           <StatCard label="Unhealthy" value={p.unhealthy_count} tone="critical" />
         </div>
 
+        {/* RE health — one chip per RE, prominent summary */}
+        {reRow && reRow.re_sites.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="flex items-center gap-2">
+              <Radio size={14} className="text-accent-cyan" strokeWidth={1.75} />
+              <CardTitle>Regional Edge health</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <PoolReHealthInline row={reRow} />
+            </CardBody>
+          </Card>
+        )}
+
         <Card>
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>Origin × Site health</CardTitle>
+            <CardTitle>Origin × Site health matrix</CardTitle>
             <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
               {totalCells} cells
             </span>

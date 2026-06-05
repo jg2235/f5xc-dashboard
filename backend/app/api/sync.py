@@ -14,6 +14,7 @@ from app.workers.tasks.sync_bot_events import sync_bot_events
 from app.workers.tasks.sync_bot_metrics import sync_bot_metrics
 from app.workers.tasks.sync_certificates import sync_certificates
 from app.workers.tasks.sync_healthchecks import sync_healthchecks
+from app.workers.tasks.sync_pool_re_health import sync_pool_re_health
 from app.workers.tasks.sync_loadbalancers import sync_loadbalancers
 from app.workers.tasks.sync_origin_pools import sync_origin_pools
 from app.workers.tasks.sync_policies import sync_policies
@@ -52,6 +53,11 @@ def trigger_policy_sync(_: User = Depends(require_admin)) -> dict:
 @router.post("/healthchecks", summary="Trigger healthcheck sync")
 def trigger_healthcheck_sync(_: User = Depends(require_admin)) -> dict:
     return {"status": "ok", "result": sync_healthchecks.apply().result}
+
+
+@router.post("/pool-re-health", summary="Trigger pool RE health sync")
+def trigger_pool_re_health_sync(_: User = Depends(require_admin)) -> dict:
+    return {"status": "ok", "result": sync_pool_re_health.apply().result}
 
 
 @router.post("/waf-events", summary="Trigger WAF events sync")

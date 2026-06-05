@@ -21,6 +21,7 @@ celery_app = Celery(
         "app.workers.tasks.sync_sites",
         "app.workers.tasks.sync_policies",
         "app.workers.tasks.sync_healthchecks",
+        "app.workers.tasks.sync_pool_re_health",
         "app.workers.tasks.sync_waf_events",
         "app.workers.tasks.sync_waf_metrics",
         "app.workers.tasks.sync_bot_events",
@@ -75,6 +76,10 @@ celery_app.conf.beat_schedule = {
     },
     "sync-healthchecks": {
         "task": "app.workers.tasks.sync_healthchecks.sync_healthchecks",
+        "schedule": schedule(run_every=settings.poll_healthcheck_interval),
+    },
+    "sync-pool-re-health": {
+        "task": "app.workers.tasks.sync_pool_re_health.sync_pool_re_health",
         "schedule": schedule(run_every=settings.poll_healthcheck_interval),
     },
     "sync-waf-events": {

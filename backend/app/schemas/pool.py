@@ -19,6 +19,7 @@ class OriginHealthCell(BaseModel):
     raw_status: str
     classified_status: OriginStatus
     consecutive_failures: int
+    failure_reason: str | None
     last_status_change: datetime | None
     last_probe_at: datetime | None
 
@@ -55,3 +56,22 @@ class PoolStats(BaseModel):
     total_origins: int
     unhealthy_cells: int                    # (origin, site) cells with unhealthy status
     warning_cells: int
+
+
+class ReSiteEntry(BaseModel):
+    """Aggregated health for one RE site across all origin servers in a pool."""
+    site_name: str
+    site_type: str
+    classified_status: OriginStatus
+    healthy_origins: int
+    total_origins: int
+    last_probe_at: datetime | None
+    failure_reasons: list[str]
+
+
+class PoolReHealthRow(BaseModel):
+    """Per-pool RE health summary — returned by GET /pools/re-health."""
+    pool_id: uuid.UUID
+    pool_name: str
+    pool_namespace: str
+    re_sites: list[ReSiteEntry]

@@ -14,7 +14,9 @@ from app.schemas.pool import (
     OriginHealthCell,
     OriginPoolDetail,
     OriginPoolSummary,
+    PoolReHealthRow,
     PoolStats,
+    ReSiteEntry,
 )
 
 router = APIRouter()
@@ -69,6 +71,84 @@ def pool_stats(
     )
 
 
+_STATUS_PRIORITY = {"unhealthy": 4, "warning": 3, "info": 2, "unknown": 1, "healthy": 0}
+
+
+def _worst_status(statuses: list[str]) -> str:
+    if not statuses:
+        return "unknown"
+    return max(statuses, key=lambda s: _STATUS_PRIORITY.get(s, 0))  # type: ignore[arg-type]
+
+
+@router.get("/re-health", response_model=list[PoolReHealthRow], summary="Per-pool RE health summary")
+def pool_re_health(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[PoolReHealthRow]:
+    """Aggregate origin_health rows (site_type='re') per pool, grouped by site.
+
+    Returns one row per pool with a list of RE sites and their aggregate
+    health status (worst-of-origins).  Pools with no RE health data return
+    an empty re_sites list.
+    """
+    pools = db.execute(
+        select(OriginPool)
+        .where(OriginPool.tenant_id == user.tenant_id)
+        .order_by(OriginPool.namespace, OriginPool.name)
+    ).scalars().all()
+
+    result: list[PoolReHealthRow] = []
+    for pool in pools:
+        re_rows = db.execute(
+            select(OriginHealth)
+            .where(
+                OriginHealth.pool_id == pool.id,
+                OriginHealth.site_type == "re",
+            )
+            .order_by(OriginHealth.site_name)
+        ).scalars().all()
+
+        # Group by site
+        sites_map: dict[str, list[OriginHealth]] = {}
+        for row in re_rows:
+            sites_map.setdefault(row.site_name, []).append(row)
+
+        re_sites: list[ReSiteEntry] = []
+        for site_name in sorted(sites_map):
+            rows = sites_map[site_name]
+            statuses = [r.classified_status for r in rows]
+            last_probe = max(
+                (r.last_probe_at for r in rows if r.last_probe_at),
+                default=None,
+            )
+            failure_reasons = sorted({
+                r.failure_reason for r in rows
+                if r.failure_reason and r.classified_status != "healthy"
+            })
+            re_sites.append(
+                ReSiteEntry(
+                    site_name=site_name,
+                    site_type="re",
+                    classified_status=_worst_status(statuses),  # type: ignore[arg-type]
+                    healthy_origins=sum(1 for s in statuses if s == "healthy"),
+                    total_origins=len(rows),
+                    last_probe_at=last_probe,
+                    failure_reasons=failure_reasons,
+                )
+            )
+
+        result.append(
+            PoolReHealthRow(
+                pool_id=pool.id,
+                pool_name=pool.name,
+                pool_namespace=pool.namespace,
+                re_sites=re_sites,
+            )
+        )
+
+    return result
+
+
 @router.get("/{pool_id}", response_model=OriginPoolDetail, summary="Pool detail with health matrix")
 def get_pool(
     pool_id: uuid.UUID,
@@ -94,6 +174,7 @@ def get_pool(
             raw_status=r.raw_status,
             classified_status=r.classified_status,  # type: ignore[arg-type]
             consecutive_failures=r.consecutive_failures,
+            failure_reason=r.failure_reason,
             last_status_change=r.last_status_change,
             last_probe_at=r.last_probe_at,
         )

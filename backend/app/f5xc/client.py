@@ -238,6 +238,17 @@ class F5XCClient:
                 lb = "default"
             candidates.append(self.FIXTURES_DIR / f"api_discovery_state__{lb}.json")
             candidates.append(self.FIXTURES_DIR / "api_discovery_state_default.json")
+        elif clean_path.endswith("/endpoints") and "http_loadbalancers" not in clean_path:
+            # GET /api/config/namespaces/{ns}/endpoints — endpoint resource list
+            # Return empty list in mock mode; sync task falls back to constructed names
+            candidates.append(self.FIXTURES_DIR / "pool_endpoints_list.json")
+        elif "/endpoints/ves-io-origin-pool-" in clean_path:
+            # /api/config/namespaces/{ns}/endpoints/ves-io-origin-pool-{pool-name}
+            endpoint_name = clean_path.rstrip("/").split("/")[-1]
+            # Strip UID suffix (e.g. -66f6b7b57d) if present; fall through to name-only fixture
+            pool_name = re.sub(r"-[0-9a-f]{8,16}$", "", endpoint_name.removeprefix("ves-io-origin-pool-"))
+            candidates.append(self.FIXTURES_DIR / f"pool_endpoint__{pool_name}.json")
+            candidates.append(self.FIXTURES_DIR / "pool_endpoint_default.json")
 
         timeseries_paths = ("app_security/metrics", "app_security/events")
         is_timeseries = any(seg in clean_path for seg in timeseries_paths) or (
@@ -615,6 +626,46 @@ class F5XCClient:
             "POST",
             f"/api/data/namespaces/{ns}/app_security/metrics",
             json=body,
+        )
+
+
+    # ------------------------------------------------------------------
+    # Pool RE health (config-plane endpoint status)
+    # ------------------------------------------------------------------
+    def list_pool_endpoint_resources(self, namespace: str | None = None) -> list[dict[str, Any]]:
+        """GET /api/config/namespaces/{ns}/endpoints — all endpoint resources.
+
+        Used to discover the full resource names (which include a UID suffix in
+        live deployments, e.g. ``ves-io-origin-pool-my-pool-66f6b7b57d``) so
+        that per-pool detail calls can use the correct name.
+        """
+        ns = namespace or self.namespace
+        return self._request("GET", f"/api/config/namespaces/{ns}/endpoints").get("items", [])
+
+    def get_pool_endpoint_status(
+        self, endpoint_resource_name: str, *, namespace: str | None = None,
+    ) -> dict[str, Any]:
+        """GET /api/config/namespaces/{ns}/endpoints/{endpoint_resource_name}.
+
+        Takes the *full* resource name (including any UID suffix) as returned
+        by list_pool_endpoint_resources.  Returns per-RE per-origin health:
+          {
+            "status": [
+              {
+                "site_ref": {"name": "ny8-nyc", ...},
+                "conditions": [{"type": "Ready", "status": "True", ...}],
+                "origin_servers": [
+                  {"address": "...", "port": N, "health_status": "HEALTHY|UNHEALTHY|...",
+                   "consecutive_failures": 0, "last_probe": "<iso>"}
+                ]
+              }
+            ]
+          }
+        """
+        ns = namespace or self.namespace
+        return self._request(
+            "GET",
+            f"/api/config/namespaces/{ns}/endpoints/{endpoint_resource_name}",
         )
 
 

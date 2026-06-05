@@ -45,6 +45,7 @@ class OriginHealth(Base):
     classified_status: Mapped[str] = mapped_column(String(16), nullable=False, default="unknown")
 
     consecutive_failures: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    failure_reason: Mapped[str | None] = mapped_column(String(120), nullable=True)
     last_status_change: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_probe_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
