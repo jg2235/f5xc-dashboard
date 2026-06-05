@@ -14,10 +14,10 @@ from app.workers.tasks.sync_bot_events import sync_bot_events
 from app.workers.tasks.sync_bot_metrics import sync_bot_metrics
 from app.workers.tasks.sync_certificates import sync_certificates
 from app.workers.tasks.sync_healthchecks import sync_healthchecks
-from app.workers.tasks.sync_pool_re_health import sync_pool_re_health
 from app.workers.tasks.sync_loadbalancers import sync_loadbalancers
 from app.workers.tasks.sync_origin_pools import sync_origin_pools
 from app.workers.tasks.sync_policies import sync_policies
+from app.workers.tasks.sync_pool_re_health import sync_pool_re_health
 from app.workers.tasks.sync_sites import sync_sites
 from app.workers.tasks.sync_waf_events import sync_waf_events
 from app.workers.tasks.sync_waf_metrics import sync_waf_metrics
