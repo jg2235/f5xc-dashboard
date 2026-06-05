@@ -1,5 +1,83 @@
 # Changelog
 
+## v0.10.0 — Per-RE health matrix + alert ack/resolve fix (2026-06-05)
+
+### Regional Edge health per origin pool
+
+Every origin pool now reports health check pass/fail status for each Regional
+Edge (RE) site individually. F5 XC probes each origin from every RE
+independently; this feature surfaces those per-RE verdicts on the dashboard.
+
+- **New Celery task `sync_pool_re_health`**: lists all endpoint resources from
+  the F5 XC config-plane API (`GET /api/config/namespaces/{ns}/endpoints`),
+  strips the UID suffix from resource names (`-[0-9a-f]{8,16}$`) to match
+  against pool names, then fetches per-RE health detail for each matched pool
+  (`GET /api/config/namespaces/{ns}/endpoints/{resource-name}`). Runs on the
+  same `POLL_HEALTHCHECK_INTERVAL` schedule as the existing health check task.
+  Beat schedule entry: `sync-pool-re-health`.
+
+- **`failure_reason` stored per row**: the `health_status_failure_reason`
+  field from the F5 XC response (e.g. `http_stream_reset`, `connection_failure`)
+  is now persisted in the `origin_health` table. Alembic migration
+  `0012` adds the nullable `VARCHAR(120)` column.
+
+- **New API endpoint `GET /api/v1/pools/re-health`**: returns one entry per
+  pool with a list of RE sites. Each site entry contains worst-case classified
+  status, healthy/total origin counts, last probe timestamp, and a deduplicated
+  list of distinct failure reasons across all unhealthy origins at that site.
+
+- **New `POST /api/v1/sync/pool-re-health`** manual trigger for ad-hoc syncs.
+
+- **New `PoolReHealthGrid` frontend component** with two display modes:
+  - **Matrix view** — pools as rows, RE sites as columns, colored dots with
+    healthy/total counts. Hover tooltip includes failure reason.
+  - **Inline view** — per-pool chip list, one chip per RE site with status
+    color, healthy/total count, and inline failure reason on unhealthy chips.
+
+- **Pools page** (`/pools`) rewritten: new "Regional Edge health per pool"
+  card at top with Matrix/Inline toggle and 60-second auto-refresh. Pool
+  inventory table rows now have an expand toggle (▶) that shows inline RE
+  chips beneath each row.
+
+- **Mock fixtures** added for pool endpoint list and per-pool detail
+  responses (used when `F5XC_MOCK=true`).
+
+### Bug fixes
+
+- **`get_db()` never committed** — the SQLAlchemy session dependency
+  `yield`ed the session then called only `db.close()`, silently rolling
+  back every write on session teardown. This caused alert acknowledge/resolve
+  mutations (and all other POST/PUT endpoints) to appear to succeed but
+  persist nothing to the database. Fixed by adding `db.commit()` on success
+  and `db.rollback()` on exception before close.
+
+- **Alert ack/resolve buttons now work** — clicking Ack or Resolve on an
+  alert persists the status change, the alert disappears from the Open filter
+  view, and the summary stat cards update. Resolving logs `resolved_at`;
+  acknowledging logs `acknowledged_at`. Both are visible under the
+  Acknowledged / Resolved filter tabs.
+
+### Schema
+
+- `0012` — `failure_reason VARCHAR(120) NULL` added to `origin_health`.
+
+### Operational notes
+
+- The endpoint status API (`/api/config/namespaces/{ns}/endpoints/{name}`)
+  reports **health check probe results**, not pool operational status. An
+  origin pool can show all REs as `UNHEALTHY` here while the F5 XC console
+  shows the pool as "active" — the console reflects the LB object's
+  deployment state, not the per-probe verdict. The most common failure reason
+  (`http_stream_reset`) indicates the health check HTTP stream is being reset
+  at the origin, typically due to TLS SNI mismatch, wrong health check path,
+  or HTTP/2 vs HTTP/1.1 mismatch. Check the configured health check on the
+  pool in F5 XC if all REs report this reason.
+
+- Live mode lists all endpoint resources per namespace first to discover the
+  full resource name (which includes a UID suffix F5 XC appends,
+  e.g. `ves-io-origin-pool-jg-arcadia-app-66f6b7b57d`). Pools with no
+  matching endpoint resource are skipped and logged at DEBUG level.
+
 ## v0.9.0 — Multi-namespace support (2026-05-06)
 
 The dashboard authenticates against ONE F5 XC tenant with ONE token, but
