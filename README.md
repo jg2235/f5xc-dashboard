@@ -8,6 +8,35 @@ See `CHANGELOG.md` for the full release history.
 
 ---
 
+## Screenshots
+
+### Tenant Overview
+The landing dashboard — LB / WAF / Bot / API protection counts, origin-pool health, policy attach state, and rolling 24h WAF/Bot traffic.
+
+![Tenant Overview](docs/screenshots/main-overview.png)
+
+### HTTP Load Balancers
+Inventory of all HTTP load balancers with advertised domains, type, attached policies (WAF / SVC / Bot / API), and backing pools.
+
+![Load Balancers](docs/screenshots/LoadBalancer-View.png)
+
+### Origin Pools
+Pool inventory with per-pool origin × site health matrix and failure-reason surfacing.
+
+![Origin Pools](docs/screenshots/Origin-Pool-View.png)
+
+### App Firewall (WAF) Policies
+Policy visibility across shared and local scopes — mode (blocking / monitoring), signatures, custom rules, and exclusions.
+
+![App Firewall (WAF) Policies](docs/screenshots/WAF-Policy-View.png)
+
+### Bot Analytics
+Bot traffic by category, action, protected app, and UA family, with a tenant-wide traffic & interventions timeline.
+
+![Bot Analytics](docs/screenshots/Bot-Stats-View.png)
+
+---
+
 ## Features
 
 | Surface | Status |
