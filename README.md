@@ -2,7 +2,7 @@
 
 A production-grade read-only SaaS dashboard for **F5 Distributed Cloud (XC)** that periodically pulls configuration and analytics via the XC REST API and surfaces them as visual dashboards.
 
-**Version**: 0.9.0 — Multi-namespace support. See `CHANGELOG.md` for the full release history.
+**Version**: 0.11.0 — API definition swagger/groups + per-LB API endpoints. See `CHANGELOG.md` for the full release history.
 
 See `CHANGELOG.md` for the full release history.
 
@@ -20,10 +20,25 @@ Inventory of all HTTP load balancers with advertised domains, type, attached pol
 
 ![Load Balancers](docs/screenshots/LoadBalancer-View.png)
 
+### Load Balancer — API Endpoints
+For LBs with API protection enabled, the detail page surfaces an **API Endpoints** section (above WAF/Bot) that mirrors F5 XC's Security Monitoring → API Endpoints screen: Inventory / Shadow / Total counts, total API calls, response-class & auth breakdown, and a per-operation table (method, path, auth, category, confidence, samples, codes). Inventory rows come from the linked API Definition's groups; ML-discovered endpoints add traffic stats and surface shadow endpoints.
+
+![Load Balancer API Endpoints](docs/screenshots/LB-API-Endpoints-View.png)
+
+### API Definitions
+API Definition detail — OpenAPI/swagger spec format, object-store spec file references, schema-update strategy, and the full **API Groups** breakdown with per-group operations (methods × path regex), matching the F5 XC console's Form view.
+
+![API Definitions](docs/screenshots/API-Definition-View.png)
+
 ### Origin Pools
 Pool inventory with per-pool origin × site health matrix and failure-reason surfacing.
 
 ![Origin Pools](docs/screenshots/Origin-Pool-View.png)
+
+### Origin Pool Health Matrix
+Tenant-wide origin-pool health roll-up — pools, origins, unhealthy/warning counts, and the per-RE regional health matrix for every origin × site.
+
+![Origin Pool Health Matrix](docs/screenshots/Origin-Pool-Health-Matrix.png)
 
 ### App Firewall (WAF) Policies
 Policy visibility across shared and local scopes — mode (blocking / monitoring), signatures, custom rules, and exclusions.

@@ -39,7 +39,8 @@ const POLICY_LINKS = [
 const ANALYTICS_LINKS = [
   { href: "/analytics/waf", label: "WAF", short: "WAF" },
   { href: "/analytics/bot", label: "Bot", short: "BOT" },
-  { href: "/analytics/api", label: "API", short: "API" },
+  // API analytics is now surfaced per-LB on the Load Balancer detail page
+  // (only for LBs with API protection enabled), so it's no longer a nav item.
   { href: "/analytics/security", label: "Security", short: "SEC" },
 ];
 

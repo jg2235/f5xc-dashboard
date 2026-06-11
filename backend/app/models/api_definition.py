@@ -37,6 +37,14 @@ class ApiDefinition(Base):
     declared_endpoints: Mapped[list[dict[str, Any]] | None] = mapped_column(
         JSONB, nullable=True
     )
+    # Real F5 XC shape — object_store URL refs to the OpenAPI/swagger documents
+    # (the console's "OpenAPI Specification Files" panel).
+    swagger_spec_files: Mapped[list[str]] = mapped_column(JSONB, nullable=False, default=list)
+    # Normalized api_groups: [{name, element_count, elements:[{methods, path_regex}]}].
+    # Mirrors the console's "Api Groups" table + per-group operations drill-down.
+    api_groups: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, nullable=False, default=list)
+    # Display label for the schema-update strategy, e.g. "Strict Schema Origin".
+    schema_update_strategy: Mapped[str | None] = mapped_column(String(64), nullable=True)
     last_seen_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

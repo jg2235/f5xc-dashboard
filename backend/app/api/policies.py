@@ -169,5 +169,10 @@ def get_policy(
         })
     elif model is BotDefensePolicy:
         detail_kwargs["protected_paths"] = obj.protected_paths
+    elif model is ApiDefinition:
+        detail_kwargs.update({
+            "swagger_spec_files": obj.swagger_spec_files or [],
+            "api_groups": obj.api_groups or [],
+        })
 
     return detail_cls(**detail_kwargs)

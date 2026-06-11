@@ -80,11 +80,25 @@ class ApiDefinitionSummary(PolicyBase):
     api_specs_count: int
     endpoint_count: int
     has_validation_rules: bool
+    schema_update_strategy: str | None = None
+
+
+class ApiGroupElement(BaseModel):
+    methods: list[str]
+    path_regex: str
+
+
+class ApiGroup(BaseModel):
+    name: str
+    element_count: int
+    elements: list[ApiGroupElement]
 
 
 class ApiDefinitionDetail(ApiDefinitionSummary):
     raw_spec: dict[str, Any]
     attached_to: list[PolicyAttachmentRef]
+    swagger_spec_files: list[str] = []
+    api_groups: list[ApiGroup] = []
 
 
 class PolicyTypeStats(BaseModel):

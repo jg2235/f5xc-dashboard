@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.11.0 — API definition swagger/groups + per-LB API endpoints (2026-06-10)
+
+### API Definition parsing — real F5 XC spec shape
+
+The API Definition transformer previously expected an inline spec shape
+(`spec.api_specs[].swagger_spec.paths{}`) that F5 XC does not return, so every
+derived count came back `0`. It now parses the real shape:
+
+- **`spec.swagger_specs[]`** — object-store URL references to the OpenAPI/swagger
+  documents (the console's "OpenAPI Specification Files" panel).
+- **`spec.api_groups[].elements[]`** — `{methods[], path_regex}` operations
+  (the console's "Api Groups" drill-down).
+- **`spec.strict_schema_origin{}`** (and siblings) → the "Schema Updates
+  Strategy" label.
+
+The legacy inline path is preserved for backward compatibility. New columns
+`swagger_spec_files`, `api_groups`, and `schema_update_strategy` are added to
+`api_definitions` via Alembic migration `0013`, surfaced on the
+`ApiDefinitionDetail` schema, and rendered on the API Definition detail page
+(spec file list + per-group operations table + schema strategy).
+
+### Load Balancer → API definition linkage
+
+- `extract_lb_policy_attachments` now also reads the **modern** reference
+  location `spec.api_specification.api_definition.{name,namespace}` (it
+  previously only looked at the legacy `spec.api_definition`), de-duplicated
+  against the legacy path.
+- `has_api_protection` likewise trips on `api_specification.api_definition`, so
+  the LB's "API" capability badge is correct.
+- The LB detail page gains an **API definition** card showing the linked
+  definition's swagger files and group operations.
+
+### Per-LB API Endpoints section
+
+LBs with API protection enabled now show an **API Endpoints** section (above
+WAF/Bot) that mirrors F5 XC's Security Monitoring → API Endpoints screen:
+Inventory / Shadow / Total counts, total API calls, response-class & auth
+breakdown, and a per-operation table. Inventory rows are the linked API
+Definition's declared operations (catch-all `^/api/.*$` groups excluded);
+ML-discovered endpoints add traffic stats and surface shadow endpoints. The
+standalone **Analytics → API** nav item is removed (data is now per-LB); the
+per-endpoint detail route is retained for drill-down.
+
 ## v0.10.0 — Per-RE health matrix + alert ack/resolve fix (2026-06-05)
 
 ### Regional Edge health per origin pool

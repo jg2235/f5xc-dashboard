@@ -364,6 +364,8 @@ function BotDefenseDetailBody({ p }: { p: BotDefensePolicyDetail }) {
 }
 
 function ApiDefinitionDetailBody({ p }: { p: ApiDefinitionDetail }) {
+  const specFiles = p.swagger_spec_files ?? [];
+  const groups = p.api_groups ?? [];
   return (
     <>
       <Card>
@@ -375,7 +377,7 @@ function ApiDefinitionDetailBody({ p }: { p: ApiDefinitionDetail }) {
             <Label>Format</Label>
             <Mono>{p.spec_format ?? "—"}</Mono>
           </div>
-          <CountRow label="Specs" value={p.api_specs_count} />
+          <CountRow label="Spec files" value={p.api_specs_count} />
         </CardBody>
       </Card>
 
@@ -383,8 +385,12 @@ function ApiDefinitionDetailBody({ p }: { p: ApiDefinitionDetail }) {
         <CardHeader>
           <CardTitle>Endpoints</CardTitle>
         </CardHeader>
-        <CardBody>
+        <CardBody className="space-y-2">
           <CountRow label="Total endpoints" value={p.endpoint_count} />
+          <div>
+            <Label>Schema updates strategy</Label>
+            <Mono>{p.schema_update_strategy ?? "—"}</Mono>
+          </div>
         </CardBody>
       </Card>
 
@@ -394,6 +400,104 @@ function ApiDefinitionDetailBody({ p }: { p: ApiDefinitionDetail }) {
         </CardHeader>
         <CardBody>
           <FeatureBadge enabled={p.has_validation_rules} label="rules enforced" tone="green" />
+        </CardBody>
+      </Card>
+
+      {/* OpenAPI / swagger spec file references (object_store URLs) */}
+      <Card className="lg:col-span-3">
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle>OpenAPI specification files</CardTitle>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+            {specFiles.length} file{specFiles.length === 1 ? "" : "s"}
+          </span>
+        </CardHeader>
+        <CardBody>
+          {specFiles.length === 0 ? (
+            <div className="text-center text-xs text-carbon-300">
+              No specification files referenced.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {specFiles.map((f) => (
+                <span
+                  key={f}
+                  className="break-all rounded border border-carbon-600 bg-carbon-800/50 px-2 py-1 font-mono text-xs text-carbon-100"
+                >
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Api groups → operations table (mirrors the console's drill-down) */}
+      <Card className="lg:col-span-3">
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle>Api groups</CardTitle>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+            {groups.length} group{groups.length === 1 ? "" : "s"}
+          </span>
+        </CardHeader>
+        <CardBody className="space-y-5">
+          {groups.length === 0 ? (
+            <div className="text-center text-xs text-carbon-300">
+              No API groups defined.
+            </div>
+          ) : (
+            groups.map((g) => (
+              <div key={g.name}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="font-mono text-xs text-accent-cyan">{g.name}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                    {g.element_count} element{g.element_count === 1 ? "" : "s"}
+                  </span>
+                </div>
+                {g.elements.length === 0 ? (
+                  <div className="px-2 py-1 font-mono text-[10px] text-carbon-300">—</div>
+                ) : (
+                  <div className="overflow-hidden rounded border border-carbon-600">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-carbon-600 bg-carbon-800/50">
+                          <th className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                            Methods
+                          </th>
+                          <th className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                            Path regex
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {g.elements.map((el, i) => (
+                          <tr
+                            key={`${el.path_regex}-${i}`}
+                            className="border-b border-carbon-700/50 last:border-0"
+                          >
+                            <td className="px-3 py-1.5 align-top">
+                              <div className="flex flex-wrap gap-1">
+                                {el.methods.map((m) => (
+                                  <span
+                                    key={m}
+                                    className="rounded border border-carbon-600 bg-carbon-800/50 px-1.5 py-0.5 font-mono text-[10px] text-carbon-100"
+                                  >
+                                    {m}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-3 py-1.5 font-mono text-xs text-carbon-100">
+                              {el.path_regex}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </CardBody>
       </Card>
     </>

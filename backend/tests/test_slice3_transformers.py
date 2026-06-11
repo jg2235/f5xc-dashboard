@@ -123,6 +123,55 @@ def test_extract_api_definition_swagger_endpoints() -> None:
     assert out["has_validation_rules"] is True
 
 
+def test_extract_api_definition_real_swagger_specs_and_groups() -> None:
+    """Real F5 XC shape: swagger_specs[] URLs + api_groups[].elements[]."""
+    item = {
+        "name": "jg-api-def",
+        "namespace": "j-granieri",
+        "get_spec": {
+            "swagger_specs": [
+                "https://f5-amer-ent.console.ves.volterra.io/api/object_store/"
+                "namespaces/j-granieri/stored_objects/swagger/jg-sentence-api/v1-26-06-10"
+            ],
+            "strict_schema_origin": {},
+            "api_groups": [
+                {
+                    "name": "ves-io-api-def-jg-api-def-all-operations",
+                    "elements": [
+                        {"methods": ["GET", "POST"], "path_regex": "/api/adjectives"},
+                        {"methods": ["GET", "DELETE"], "path_regex": "/api/adjectives/{id}"},
+                        {"methods": ["GET", "POST"], "path_regex": "/api/animals"},
+                        {"methods": ["GET", "DELETE"], "path_regex": "/api/animals/{id}"},
+                        {"methods": ["GET", "POST"], "path_regex": "/api/locations"},
+                        {"methods": ["GET", "DELETE"], "path_regex": "/api/locations/{id}"},
+                    ],
+                },
+                {
+                    "name": "ves-io-api-def-jg-api-def-base-urls",
+                    "elements": [
+                        {"methods": ["GET", "POST", "PUT", "DELETE"], "path_regex": "^/api/.*$"},
+                    ],
+                },
+            ],
+        },
+    }
+    out = extract_api_definition_fields(item)
+    assert out["spec_format"] == "swagger"
+    assert out["api_specs_count"] == 1
+    assert out["swagger_spec_files"] == [item["get_spec"]["swagger_specs"][0]]
+    # 6 elements in all-operations + 1 in base-urls
+    assert out["endpoint_count"] == 7
+    assert out["schema_update_strategy"] == "Strict Schema Origin"
+    assert out["has_validation_rules"] is True
+    assert len(out["api_groups"]) == 2
+    all_ops = out["api_groups"][0]
+    assert all_ops["name"] == "ves-io-api-def-jg-api-def-all-operations"
+    assert all_ops["element_count"] == 6
+    assert all_ops["elements"][0] == {"methods": ["GET", "POST"], "path_regex": "/api/adjectives"}
+    # declared_endpoints flattens methods × path for shadow detection
+    assert {"method": "GET", "path": "/api/adjectives"} in out["declared_endpoints"]
+
+
 def test_extract_lb_policy_attachments_full_set() -> None:
     item = {
         "name": "www-prod-lb",
@@ -150,6 +199,29 @@ def test_extract_lb_policy_attachments_full_set() -> None:
     assert ("service_policy", "shared", "global-blocklist") in by_type
     assert ("bot_defense_policy", "shared", "global-bot-defense") in by_type
     assert ("api_definition", "shared", "public-api-v2") in by_type
+
+
+def test_extract_lb_policy_attachments_modern_api_specification() -> None:
+    """Modern LBs attach the api definition under api_specification."""
+    item = {
+        "name": "jg-sentence-api",
+        "namespace": "j-granieri",
+        "get_spec": {
+            "api_specification": {
+                "api_definition": {
+                    "name": "jg-api-def",
+                    "namespace": "j-granieri",
+                    "tenant": "f5-amer-ent-qyyfhhfj",
+                },
+                "validation_all_spec_endpoints": {"validation_mode": {}},
+            },
+        },
+    }
+    attachments = extract_lb_policy_attachments(item)
+    by_type = {(a["policy_type"], a["policy_namespace"], a["policy_name"]) for a in attachments}
+    assert ("api_definition", "j-granieri", "jg-api-def") in by_type
+    # Exactly one api_definition attachment — no duplicate from the legacy path.
+    assert sum(1 for a in attachments if a["policy_type"] == "api_definition") == 1
 
 
 def test_extract_lb_policy_attachments_empty_lb() -> None:

@@ -1,13 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
 import Link from "next/link";
 import { use } from "react";
-import { ChevronLeft, ArrowUpRight } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import { ChevronLeft, ArrowUpRight, FileJson } from "lucide-react";
 import {
   api,
   POLICY_TYPE_LABELS,
   POLICY_TYPE_SHORT,
+  type ApiDefinitionDetail,
   type AttachedPolicyRef,
   type PolicyType,
   type PolicyTypeUrl,
@@ -64,6 +66,19 @@ export default function LBDetailPage({ params }: { params: Promise<{ id: string 
     queryFn: () => api.apiDiscoveryState(),
     enabled: ready,
     refetchInterval: 60_000,
+  });
+
+  // Linked API definitions — fetch detail (swagger files + groups) for each
+  // attached api_definition that has been synced (has a policy_id).
+  const apiDefRefs = (policies.data ?? []).filter(
+    (p) => p.policy_type === "api_definition" && p.policy_id,
+  );
+  const apiDefDetails = useQueries({
+    queries: apiDefRefs.map((ref) => ({
+      queryKey: ["api-def-detail", ref.policy_id],
+      queryFn: () => api.getPolicy<ApiDefinitionDetail>("api_definitions", ref.policy_id!),
+      enabled: ready,
+    })),
   });
 
   if (!ready) return null;
@@ -167,6 +182,251 @@ export default function LBDetailPage({ params }: { params: Promise<{ id: string 
           </Card>
         </div>
 
+        {/* API endpoints (slice 6) — only when the LB has API protection enabled.
+            Mirrors F5 XC's Security Monitoring → API Endpoints screen. The
+            "Inventory" rows are the declared operations from the linked API
+            definition (api_groups); ML-discovered endpoints add traffic stats
+            and surface "Shadow" endpoints not present in any definition. */}
+        {x.has_api_protection && (() => {
+          const discovered = apiEndpointsForLb.data ?? [];
+          const discByKey = new Map(
+            discovered.map((e) => [`${e.method} ${e.endpoint_path}`, e]),
+          );
+
+          type EpRow = {
+            key: string;
+            method: string;
+            path: string;
+            category: "Inventory" | "Shadow";
+            defName: string | null;
+            endpointId: string | null;
+            authType: string | null;
+            confidence: number | null;
+            samples: number;
+            codes: number[] | null;
+            lastSeen: string | null;
+          };
+          const rows: EpRow[] = [];
+          const seen = new Set<string>();
+
+          // 1. Inventory operations declared in the linked API definition(s).
+          //    Skip catch-all groups (regex path like ^/api/.*$).
+          for (const d of apiDefDetails) {
+            const detail = d.data;
+            if (!detail) continue;
+            for (const g of detail.api_groups ?? []) {
+              for (const el of g.elements ?? []) {
+                if (el.path_regex.includes(".*")) continue;
+                for (const m of el.methods) {
+                  const key = `${m} ${el.path_regex}`;
+                  if (seen.has(key)) continue;
+                  seen.add(key);
+                  const disc = discByKey.get(key);
+                  rows.push({
+                    key,
+                    method: m,
+                    path: el.path_regex,
+                    category: "Inventory",
+                    defName: detail.name,
+                    endpointId: disc?.id ?? null,
+                    authType: disc?.auth_type ?? null,
+                    confidence: disc?.discovery_confidence ?? null,
+                    samples: disc?.total_request_samples ?? 0,
+                    codes: disc?.response_codes ?? null,
+                    lastSeen: disc?.last_seen_at ?? null,
+                  });
+                }
+              }
+            }
+          }
+
+          // 2. ML-discovered endpoints not present in any definition → Shadow.
+          for (const e of discovered) {
+            const key = `${e.method} ${e.endpoint_path}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            rows.push({
+              key,
+              method: e.method,
+              path: e.endpoint_path,
+              category: "Shadow",
+              defName: e.api_definition_name,
+              endpointId: e.id,
+              authType: e.auth_type,
+              confidence: e.discovery_confidence,
+              samples: e.total_request_samples,
+              codes: e.response_codes,
+              lastSeen: e.last_seen_at,
+            });
+          }
+
+          const total = rows.length;
+          const inventoryCount = rows.filter((r) => r.category === "Inventory").length;
+          const shadowCount = total - inventoryCount;
+          const totalSamples = rows.reduce((sum, r) => sum + r.samples, 0);
+          const authedCount = rows.filter(
+            (r) => r.authType && r.authType !== "none" && r.authType !== "unknown",
+          ).length;
+          const lbState = apiStateAll.data?.find(
+            (s) => s.lb_namespace === x.namespace && s.lb_name === x.name,
+          );
+          const loading =
+            apiEndpointsForLb.isLoading || apiDefDetails.some((d) => d.isLoading);
+          // Rows whose observed response codes fall in each status class.
+          const classCount = (lo: number, hi: number) =>
+            rows.filter((r) => (r.codes ?? []).some((c) => c >= lo && c < hi)).length;
+          const statusClasses = [
+            { label: "2xx", count: classCount(200, 300), tone: "text-accent-green" },
+            { label: "3xx", count: classCount(300, 400), tone: "text-accent-cyan" },
+            { label: "4xx", count: classCount(400, 500), tone: "text-accent-amber" },
+            { label: "5xx", count: classCount(500, 600), tone: "text-accent-red" },
+          ];
+          return (
+            <Card className="mt-6">
+              <CardHeader className="flex items-center justify-between">
+                <CardTitle>
+                  <span className="inline-flex items-center gap-2">
+                    API endpoints
+                    {lbState && (
+                      <DiscoveryStateBadge
+                        state={lbState.state}
+                        confidence={lbState.confidence_score}
+                      />
+                    )}
+                  </span>
+                </CardTitle>
+                <Link
+                  href="/analytics/api"
+                  className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-accent-cyan hover:underline"
+                >
+                  Tenant analytics <ArrowUpRight size={11} />
+                </Link>
+              </CardHeader>
+              <CardBody>
+                {/* Summary tiles */}
+                <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+                  {[
+                    { label: "Inventory", value: inventoryCount, tone: "text-accent-green" },
+                    { label: "Shadow", value: shadowCount, tone: shadowCount > 0 ? "text-accent-violet" : "text-carbon-100" },
+                    { label: "Total endpoints", value: total, tone: "text-accent-cyan" },
+                    { label: "Total API calls", value: totalSamples.toLocaleString(), tone: "text-carbon-100" },
+                  ].map((t) => (
+                    <div
+                      key={t.label}
+                      className="rounded border border-carbon-600 bg-carbon-800/40 px-3 py-2"
+                    >
+                      <div className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                        {t.label}
+                      </div>
+                      <div className={`mt-1 font-display text-2xl font-semibold ${t.tone}`}>
+                        {t.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Status-class + auth strip */}
+                <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-carbon-300">
+                  <span className="uppercase tracking-widest text-[10px]">Response classes:</span>
+                  {statusClasses.map((s) => (
+                    <span key={s.label}>
+                      {s.label}: <span className={s.tone}>{s.count}</span>
+                    </span>
+                  ))}
+                  <span className="ml-auto">
+                    Authenticated:{" "}
+                    <span className="text-accent-green">{authedCount}</span>
+                    <span className="text-carbon-400"> / {total}</span>
+                  </span>
+                </div>
+
+                {/* Endpoint table */}
+                {loading ? (
+                  <div className="py-6 text-center text-xs text-carbon-300">Loading…</div>
+                ) : total === 0 ? (
+                  <div className="py-6 text-center text-xs text-carbon-300">
+                    No API endpoints found for this load balancer yet — wait for the next sync cycle.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded border border-carbon-700">
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="border-b border-carbon-600 text-left font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                          <th className="px-3 py-2 font-medium">API endpoint</th>
+                          <th className="px-3 py-2 font-medium">Method</th>
+                          <th className="px-3 py-2 font-medium">Auth</th>
+                          <th className="px-3 py-2 font-medium">Category</th>
+                          <th className="px-3 py-2 font-medium">Conf</th>
+                          <th className="px-3 py-2 font-medium">Samples</th>
+                          <th className="px-3 py-2 font-medium">Codes</th>
+                          <th className="px-3 py-2 font-medium">Last seen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((r) => (
+                          <tr
+                            key={r.key}
+                            className="border-b border-carbon-700/50 last:border-0 hover:bg-carbon-700/40"
+                          >
+                            <td className="px-3 py-1.5">
+                              {r.endpointId ? (
+                                <Link
+                                  href={`/analytics/api/endpoints/${r.endpointId}`}
+                                  className="font-mono text-xs text-carbon-100 hover:text-accent-cyan"
+                                >
+                                  {r.path}
+                                </Link>
+                              ) : (
+                                <span className="font-mono text-xs text-carbon-100">{r.path}</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-1.5">
+                              <span className="rounded bg-carbon-700 px-1.5 py-0.5 font-mono text-[10px] uppercase text-carbon-100">
+                                {r.method}
+                              </span>
+                            </td>
+                            <td className="px-3 py-1.5 font-mono text-[11px] uppercase text-carbon-200">
+                              {r.authType ?? "—"}
+                            </td>
+                            <td className="px-3 py-1.5">
+                              {r.category === "Shadow" ? (
+                                <span className="inline-flex items-center rounded border border-accent-violet/40 bg-accent-violet/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-accent-violet">
+                                  Shadow
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center rounded border border-accent-green/30 bg-accent-green/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-accent-green">
+                                  Inventory
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-1.5 font-mono text-[11px] tabular-nums text-carbon-100">
+                              {r.confidence !== null ? `${r.confidence}%` : "—"}
+                            </td>
+                            <td className="px-3 py-1.5 font-mono text-[11px] tabular-nums text-carbon-100">
+                              {r.samples.toLocaleString()}
+                            </td>
+                            <td className="px-3 py-1.5 font-mono text-[10px] text-carbon-200">
+                              {r.codes && r.codes.length > 0 ? r.codes.join(", ") : "—"}
+                            </td>
+                            <td
+                              className="px-3 py-1.5 font-mono text-[10px] text-carbon-300"
+                              title={r.lastSeen ? format(new Date(r.lastSeen), "PPpp") : ""}
+                            >
+                              {r.lastSeen
+                                ? formatDistanceToNow(new Date(r.lastSeen), { addSuffix: true })
+                                : "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          );
+        })()}
+
         {/* WAF traffic & violations (slice 4) */}
         {x.has_waf && (
           <Card className="mt-6">
@@ -251,60 +511,145 @@ export default function LBDetailPage({ params }: { params: Promise<{ id: string 
           </Card>
         )}
 
-        {/* API discovery (slice 6) */}
-        {(() => {
-          const epCount = apiEndpointsForLb.data?.length ?? 0;
-          const shadowCount =
-            apiEndpointsForLb.data?.filter((e) => e.is_shadow).length ?? 0;
-          const lbState = apiStateAll.data?.find(
-            (s) => s.lb_namespace === x.namespace && s.lb_name === x.name,
-          );
-          if (epCount === 0 && !lbState) return null;
+
+        {/* Linked API definitions — swagger spec files + group operations */}
+        {apiDefRefs.map((ref, i) => {
+          const detail = apiDefDetails[i]?.data;
+          const loading = apiDefDetails[i]?.isLoading;
+          const specFiles = detail?.swagger_spec_files ?? [];
+          const groups = detail?.api_groups ?? [];
           return (
-            <Card className="mt-6">
+            <Card className="mt-6" key={`${ref.policy_namespace}-${ref.policy_name}`}>
               <CardHeader className="flex items-center justify-between">
-                <CardTitle>API discovery</CardTitle>
+                <CardTitle>
+                  <span className="inline-flex items-center gap-2">
+                    <FileJson size={14} className="text-accent-amber" />
+                    API definition · {ref.policy_name}
+                  </span>
+                </CardTitle>
                 <Link
-                  href="/analytics/api"
+                  href={`/policies/api_definitions/${ref.policy_id}`}
                   className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-accent-cyan hover:underline"
                 >
-                  Tenant analytics <ArrowUpRight size={11} />
+                  Definition detail <ArrowUpRight size={11} />
                 </Link>
               </CardHeader>
-              <CardBody>
-                <div className="flex flex-wrap items-center gap-6 font-mono text-xs">
-                  {lbState && (
-                    <span className="text-carbon-300">
-                      State:{" "}
-                      <DiscoveryStateBadge
-                        state={lbState.state}
-                        confidence={lbState.confidence_score}
-                      />
-                    </span>
-                  )}
-                  <span className="text-carbon-300">
-                    Endpoints discovered:{" "}
-                    <span className="text-accent-cyan">{epCount}</span>
-                  </span>
-                  <span className="text-carbon-300">
-                    Shadow:{" "}
-                    <span className={shadowCount > 0 ? "text-accent-violet" : "text-accent-green"}>
-                      {shadowCount}
-                    </span>
-                  </span>
-                  {lbState && (
-                    <span className="text-carbon-300">
-                      Samples:{" "}
-                      <span className="text-carbon-100">
-                        {lbState.total_traffic_samples.toLocaleString()}
+              <CardBody className="space-y-5">
+                {loading ? (
+                  <div className="text-center text-xs text-carbon-300">Loading…</div>
+                ) : (
+                  <>
+                    {/* Spec metadata strip */}
+                    <div className="flex flex-wrap items-center gap-6 font-mono text-xs text-carbon-300">
+                      <span>
+                        Format:{" "}
+                        <span className="text-carbon-100">{detail?.spec_format ?? "—"}</span>
                       </span>
-                    </span>
-                  )}
-                </div>
+                      <span>
+                        Endpoints:{" "}
+                        <span className="text-accent-cyan">{detail?.endpoint_count ?? 0}</span>
+                      </span>
+                      <span>
+                        Schema strategy:{" "}
+                        <span className="text-carbon-100">
+                          {detail?.schema_update_strategy ?? "—"}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* OpenAPI / swagger spec files */}
+                    <div>
+                      <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                        OpenAPI specification files ({specFiles.length})
+                      </div>
+                      {specFiles.length === 0 ? (
+                        <div className="font-mono text-[10px] text-carbon-300">
+                          No specification files referenced.
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          {specFiles.map((f) => (
+                            <span
+                              key={f}
+                              className="break-all rounded border border-carbon-600 bg-carbon-800/50 px-2 py-1 font-mono text-xs text-carbon-100"
+                            >
+                              {f}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* API groups → operations */}
+                    <div>
+                      <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                        Api groups ({groups.length})
+                      </div>
+                      {groups.length === 0 ? (
+                        <div className="font-mono text-[10px] text-carbon-300">
+                          No API groups defined.
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {groups.map((g) => (
+                            <div key={g.name}>
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="font-mono text-xs text-accent-cyan">{g.name}</span>
+                                <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                                  {g.element_count} element{g.element_count === 1 ? "" : "s"}
+                                </span>
+                              </div>
+                              {g.elements.length > 0 && (
+                                <div className="overflow-hidden rounded border border-carbon-600">
+                                  <table className="w-full text-left">
+                                    <thead>
+                                      <tr className="border-b border-carbon-600 bg-carbon-800/50">
+                                        <th className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                                          Methods
+                                        </th>
+                                        <th className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                                          Path regex
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {g.elements.map((el, j) => (
+                                        <tr
+                                          key={`${el.path_regex}-${j}`}
+                                          className="border-b border-carbon-700/50 last:border-0"
+                                        >
+                                          <td className="px-3 py-1.5 align-top">
+                                            <div className="flex flex-wrap gap-1">
+                                              {el.methods.map((m) => (
+                                                <span
+                                                  key={m}
+                                                  className="rounded border border-carbon-600 bg-carbon-800/50 px-1.5 py-0.5 font-mono text-[10px] text-carbon-100"
+                                                >
+                                                  {m}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </td>
+                                          <td className="px-3 py-1.5 font-mono text-xs text-carbon-100">
+                                            {el.path_regex}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </CardBody>
             </Card>
           );
-        })()}
+        })}
 
         {/* Applied policies */}
         <Card className="mt-6">

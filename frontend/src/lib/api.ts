@@ -226,11 +226,25 @@ export type ApiDefinitionSummary = PolicyBase & {
   api_specs_count: number;
   endpoint_count: number;
   has_validation_rules: boolean;
+  schema_update_strategy: string | null;
+};
+
+export type ApiGroupElement = {
+  methods: string[];
+  path_regex: string;
+};
+
+export type ApiGroup = {
+  name: string;
+  element_count: number;
+  elements: ApiGroupElement[];
 };
 
 export type ApiDefinitionDetail = ApiDefinitionSummary & {
   raw_spec: Record<string, unknown>;
   attached_to: PolicyAttachmentRef[];
+  swagger_spec_files: string[];
+  api_groups: ApiGroup[];
 };
 
 export type AnyPolicySummary =

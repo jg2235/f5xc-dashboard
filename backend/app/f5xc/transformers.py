@@ -182,6 +182,9 @@ def extract_lb_fields(item: dict[str, Any]) -> dict[str, Any]:
         or spec.get("api_discovery")
         or spec.get("enable_api_discovery")
         or spec.get("api_definition")
+        # Modern shape: api definition is attached under api_specification.
+        or (isinstance(spec.get("api_specification"), dict)
+            and spec["api_specification"].get("api_definition"))
     )
     active_policies = (spec.get("active_service_policies") or {}).get("policies") or []
     has_service_policy = bool(active_policies) or spec.get("service_policies_from_namespace") is not None
@@ -274,10 +277,24 @@ def extract_lb_policy_attachments(item: dict[str, Any]) -> list[dict[str, str]]:
                         "policy_name": ep_name,
                     })
 
-    api_def = spec.get("api_definition")
-    if isinstance(api_def, dict):
+    # API definition references live in two places depending on LB config age:
+    #   Legacy:  spec.api_definition{...}
+    #   Modern:  spec.api_specification.api_definition{name, namespace}  (single)
+    #            spec.api_specification.api_definitions[]                (multi-spec)
+    for container in (spec.get("api_definition"), spec.get("api_specification")):
+        if not isinstance(container, dict):
+            continue
+        # Nested single ref (modern: api_specification.api_definition)
+        nested = container.get("api_definition")
+        if isinstance(nested, dict) and nested.get("name"):
+            out.append({
+                "policy_type": "api_definition",
+                "policy_namespace": nested.get("namespace") or "",
+                "policy_name": nested["name"],
+            })
+        # List refs (api_definitions[], api_definition_ref[])
         for key in ("api_definitions", "api_definition_ref"):
-            entries = api_def.get(key) or []
+            entries = container.get(key) or []
             if isinstance(entries, list):
                 for entry in entries:
                     if isinstance(entry, dict) and entry.get("name"):
@@ -286,11 +303,12 @@ def extract_lb_policy_attachments(item: dict[str, Any]) -> list[dict[str, str]]:
                             "policy_namespace": entry.get("namespace") or "",
                             "policy_name": entry["name"],
                         })
-        if api_def.get("name"):
+        # Direct ref on the container itself (legacy: api_definition.name)
+        if container.get("name"):
             out.append({
                 "policy_type": "api_definition",
-                "policy_namespace": api_def.get("namespace") or "",
-                "policy_name": api_def["name"],
+                "policy_namespace": container.get("namespace") or "",
+                "policy_name": container["name"],
             })
 
     return out
@@ -671,46 +689,141 @@ def extract_bot_defense_policy_fields(item: dict[str, Any]) -> dict[str, Any]:
 
 
 # --- API Definition ---------------------------------------------------------
+_HTTP_METHODS = {"get", "post", "put", "delete", "patch", "options", "head", "trace", "connect"}
+
+
+def _schema_update_strategy(spec: dict[str, Any]) -> str | None:
+    """Map F5 XC's schema-update settings to a display label.
+
+    The console surfaces this as "Schema Updates Strategy". The spec encodes
+    the choice as a presence-only oneof field, e.g. ``strict_schema_origin: {}``
+    or ``allow_schema_updates: {}``.
+    """
+    for key, label in (
+        ("strict_schema_origin", "Strict Schema Origin"),
+        ("allow_schema_updates", "Allow Schema Updates"),
+        ("disable_schema_updates", "Disabled"),
+    ):
+        if key in spec:
+            return label
+    return None
+
+
+def _extract_api_groups(spec: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Normalize ``spec.api_groups`` into display rows + flattened declared endpoints.
+
+    Real F5 XC shape::
+
+        "api_groups": [
+          {"name": "...-all-operations",
+           "elements": [{"methods": ["GET","POST"], "path_regex": "/api/adjectives"}, ...]},
+          ...
+        ]
+
+    Returns ``(groups, declared_endpoints)`` where ``groups`` mirrors the console's
+    "Api Groups" table (name + per-element methods/path_regex) and
+    ``declared_endpoints`` is the flattened ``{method, path}`` list used for
+    shadow-endpoint detection.
+    """
+    groups: list[dict[str, Any]] = []
+    declared: list[dict[str, Any]] = []
+    raw_groups = spec.get("api_groups")
+    if not isinstance(raw_groups, list):
+        return groups, declared
+
+    for g in raw_groups:
+        if not isinstance(g, dict):
+            continue
+        elements_in = g.get("elements")
+        if not isinstance(elements_in, list):
+            elements_in = []
+        elements_out: list[dict[str, Any]] = []
+        for el in elements_in:
+            if not isinstance(el, dict):
+                continue
+            path_regex = el.get("path_regex") or el.get("path") or ""
+            methods = el.get("methods")
+            if not isinstance(methods, list):
+                methods = []
+            methods = [str(m).upper() for m in methods if m]
+            elements_out.append({"methods": methods, "path_regex": path_regex})
+            for m in methods:
+                declared.append({"method": m, "path": path_regex})
+        groups.append({
+            "name": g.get("name", ""),
+            "element_count": len(elements_out),
+            "elements": elements_out,
+        })
+    return groups, declared
+
+
 def extract_api_definition_fields(item: dict[str, Any]) -> dict[str, Any]:
     spec = item.get("get_spec") or item.get("spec") or {}
     name = item.get("name", "")
     namespace = item.get("namespace", "")
 
-    api_specs = spec.get("api_specs") or []
-    if not isinstance(api_specs, list):
-        api_specs = []
-
     spec_format = None
     endpoint_count = 0
     has_validation = False
     declared_endpoints: list[dict[str, Any]] = []
+    swagger_spec_files: list[str] = []
+    api_specs_count = 0
 
-    _http_methods = {"get", "post", "put", "delete", "patch", "options", "head", "trace"}
-
-    for s in api_specs:
-        if not isinstance(s, dict):
+    # --- Real F5 XC shape: swagger_specs[] (URL refs) + api_groups[] -----------
+    # The console's "OpenAPI Specification Files" panel lists these URLs verbatim;
+    # the actual OpenAPI document lives in object_store and is referenced by path.
+    for spec_key, fmt in (("swagger_specs", "swagger"), ("openapi_specs", "openapi")):
+        refs = spec.get(spec_key)
+        if not isinstance(refs, list):
             continue
-        # Both swagger_spec and openapi_spec follow the same paths{} → method{} layout
-        for spec_key, fmt in (("swagger_spec", "swagger"), ("openapi_spec", "openapi")):
-            sub = s.get(spec_key)
-            if not isinstance(sub, dict):
+        for ref in refs:
+            if isinstance(ref, str) and ref.strip():
+                swagger_spec_files.append(ref.strip())
+                spec_format = spec_format or fmt
+
+    api_groups, group_declared = _extract_api_groups(spec)
+    schema_update_strategy = _schema_update_strategy(spec)
+
+    if swagger_spec_files or api_groups:
+        # New shape detected — derive counts from group elements.
+        api_specs_count = len(swagger_spec_files)
+        declared_endpoints = group_declared
+        # Total distinct path_regex elements across all groups (mirrors the
+        # console's per-group "N item(s)" element count, summed).
+        endpoint_count = sum(g["element_count"] for g in api_groups)
+        # A strict origin / explicit schema-update strategy means validation
+        # rules are being enforced against the declared schema.
+        has_validation = schema_update_strategy is not None
+    else:
+        # --- Legacy/inline shape: api_specs[].swagger_spec.paths{} -------------
+        api_specs = spec.get("api_specs") or []
+        if not isinstance(api_specs, list):
+            api_specs = []
+        api_specs_count = len(api_specs)
+        for s in api_specs:
+            if not isinstance(s, dict):
                 continue
-            spec_format = spec_format or fmt
-            paths = sub.get("paths") or {}
-            if not isinstance(paths, dict):
-                continue
-            endpoint_count += len(paths)
-            for path, methods in paths.items():
-                if not isinstance(methods, dict):
+            # Both swagger_spec and openapi_spec share the paths{} → method{} layout
+            for spec_key, fmt in (("swagger_spec", "swagger"), ("openapi_spec", "openapi")):
+                sub = s.get(spec_key)
+                if not isinstance(sub, dict):
                     continue
-                for m_key in methods:
-                    if m_key.lower() in _http_methods:
-                        declared_endpoints.append({
-                            "method": m_key.upper(),
-                            "path": path,
-                        })
-        if s.get("validation") or s.get("validation_rules"):
-            has_validation = True
+                spec_format = spec_format or fmt
+                paths = sub.get("paths") or {}
+                if not isinstance(paths, dict):
+                    continue
+                endpoint_count += len(paths)
+                for path, methods in paths.items():
+                    if not isinstance(methods, dict):
+                        continue
+                    for m_key in methods:
+                        if m_key.lower() in _HTTP_METHODS:
+                            declared_endpoints.append({
+                                "method": m_key.upper(),
+                                "path": path,
+                            })
+            if s.get("validation") or s.get("validation_rules"):
+                has_validation = True
 
     if spec.get("validation_rules") or spec.get("api_validation_rules"):
         has_validation = True
@@ -720,9 +833,12 @@ def extract_api_definition_fields(item: dict[str, Any]) -> dict[str, Any]:
         "name": name,
         "is_shared": _is_shared(namespace),
         "spec_format": spec_format,
-        "api_specs_count": len(api_specs),
+        "api_specs_count": api_specs_count,
         "endpoint_count": endpoint_count,
         "has_validation_rules": has_validation,
         "raw_spec": spec,
         "declared_endpoints": declared_endpoints if declared_endpoints else None,
+        "swagger_spec_files": swagger_spec_files,
+        "api_groups": api_groups,
+        "schema_update_strategy": schema_update_strategy,
     }
