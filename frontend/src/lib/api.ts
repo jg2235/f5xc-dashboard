@@ -91,10 +91,26 @@ export type OriginPoolSummary = {
   last_seen_at: string;
 };
 
+export type HealthCheckConfig = {
+  namespace: string;
+  name: string;
+  protocol: string; // http | https | tcp | unknown
+  interval_seconds: number | null;
+  timeout_seconds: number | null;
+  healthy_threshold: number | null;
+  unhealthy_threshold: number | null;
+  jitter_percent: number | null;
+  http_path: string | null;
+  http_host_header: string | null;
+  http_use_http2: boolean | null;
+  expected_status_codes: string[] | null;
+};
+
 export type OriginPoolDetail = OriginPoolSummary & {
   origin_addresses: string[];
   site_names: string[];
   healthcheck_refs: string[] | null;
+  healthchecks: HealthCheckConfig[];
   health_matrix: OriginHealthCell[];
   raw_spec: Record<string, unknown>;
 };

@@ -399,6 +399,17 @@ class F5XCClient:
             f"/api/config/namespaces/{ns}/origin_pools/{name}",
         )
 
+    def list_healthchecks(self, namespace: str | None = None) -> list[dict[str, Any]]:
+        ns = namespace or self.namespace
+        return self._request("GET", f"/api/config/namespaces/{ns}/healthchecks").get("items", [])
+
+    def get_healthcheck(self, name: str, namespace: str | None = None) -> dict[str, Any]:
+        ns = namespace or self.namespace
+        return self._request(
+            "GET",
+            f"/api/config/namespaces/{ns}/healthchecks/{name}",
+        )
+
     # ------------------------------------------------------------------
     # Sites + health (slice 2)
     # ------------------------------------------------------------------

@@ -13,6 +13,7 @@ from app.models.bot_event import BotEvent
 from app.models.bot_metric_1hour import BotMetric1Hour
 from app.models.bot_metric_1min import BotMetric1Min
 from app.models.certificate import Certificate
+from app.models.health_check import HealthCheck
 from app.models.loadbalancer import LoadBalancer
 from app.models.origin_health import OriginHealth
 from app.models.origin_pool import OriginPool
@@ -40,6 +41,7 @@ __all__ = [
     "BotMetric1Hour",
     "BotMetric1Min",
     "Certificate",
+    "HealthCheck",
     "LoadBalancer",
     "OriginHealth",
     "OriginPool",

@@ -4,10 +4,58 @@ from __future__ import annotations
 from app.f5xc.transformers import (
     ALL_RE_SITES_SENTINEL,
     classify_origin_status,
+    extract_healthcheck_fields,
     extract_lb_fields,
     extract_pool_fields,
     extract_site_fields,
 )
+
+
+def test_extract_healthcheck_http() -> None:
+    item = {
+        "name": "jg-hc-arcadia",
+        "namespace": "j-granieri",
+        "get_spec": {
+            "interval": 15,
+            "timeout": 3,
+            "healthy_threshold": 3,
+            "unhealthy_threshold": 1,
+            "jitter_percent": 0,
+            "http_health_check": {
+                "path": "/",
+                "use_origin_server_name": {},
+                "expected_status_codes": [200],
+                "use_http2": False,
+            },
+        },
+    }
+    out = extract_healthcheck_fields(item)
+    assert out["protocol"] == "http"
+    assert out["http_path"] == "/"
+    assert out["http_host_header"] == "(origin server name)"
+    assert out["http_use_http2"] is False
+    assert out["expected_status_codes"] == ["200"]
+    assert out["interval_seconds"] == 15
+    assert out["timeout_seconds"] == 3
+    assert out["healthy_threshold"] == 3
+    assert out["unhealthy_threshold"] == 1
+
+
+def test_extract_healthcheck_tcp_and_host_header() -> None:
+    tcp = extract_healthcheck_fields({
+        "name": "tcp-hc", "namespace": "ns",
+        "get_spec": {"interval": 10, "tcp_health_check": {"send_payload": "ping"}},
+    })
+    assert tcp["protocol"] == "tcp"
+    assert tcp["http_path"] is None
+    assert tcp["expected_status_codes"] is None
+
+    explicit = extract_healthcheck_fields({
+        "name": "h", "namespace": "ns",
+        "get_spec": {"http_health_check": {"path": "/health", "host_header": "api.example.com"}},
+    })
+    assert explicit["http_host_header"] == "api.example.com"
+    assert explicit["http_path"] == "/health"
 
 
 def test_classify_origin_status_operational() -> None:

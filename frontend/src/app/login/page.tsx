@@ -33,7 +33,7 @@ export default function LoginPage() {
               F5 Distributed Cloud
             </div>
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-carbon-200">
-              Dashboard &middot; v0.7
+              Dashboard &middot; v0.13.0
             </div>
           </div>
         </div>

@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.13.0 — Health check configuration on origin pools (2026-06-11)
+
+Origin pools referenced health check objects by name only, with no visibility
+into how the check was configured. The dashboard now syncs the standalone
+health check objects and surfaces their full configuration on the pool detail
+page.
+
+- **New `HealthCheck` model + Alembic migration `0014`** stores parsed config:
+  protocol (http/https/tcp), interval, timeout, healthy/unhealthy thresholds,
+  jitter, HTTP path, host header, HTTP/2, and expected status codes.
+- **New `sync_healthcheck_configs` Celery task** lists + hydrates health check
+  objects per namespace (`GET /api/config/namespaces/{ns}/healthchecks[/{name}]`).
+  Scheduled on the config-poll interval, included in `POST /sync/all` and the
+  `/sync/all/stream` progress feed, with a manual
+  `POST /sync/healthcheck-configs` trigger. (Distinct from `sync_healthchecks`,
+  which fetches per-origin per-site probe *results*.)
+- **`F5XCClient.list_healthchecks` / `get_healthcheck`** + `extract_healthcheck_fields`
+  transformer (handles the http/https/tcp oneof and `host_header` vs
+  `use_origin_server_name`).
+- **Pool detail API** resolves each pool's `healthcheck_refs` to the synced
+  config and returns it as `healthchecks[]`; the pool detail page gains a
+  **Health checks** card showing the assigned name(s) and full configuration.
+
 ## v0.12.0 — Per-LB malicious users + stepped sync progress (2026-06-11)
 
 ### Malicious users per load balancer

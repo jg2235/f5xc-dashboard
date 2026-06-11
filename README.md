@@ -2,7 +2,7 @@
 
 A production-grade read-only SaaS dashboard for **F5 Distributed Cloud (XC)** that periodically pulls configuration and analytics via the XC REST API and surfaces them as visual dashboards.
 
-**Version**: 0.12.0 — Per-LB malicious users + stepped sync progress. See `CHANGELOG.md` for the full release history.
+**Version**: 0.13.0 — Health check configuration on origin pools. See `CHANGELOG.md` for the full release history.
 
 See `CHANGELOG.md` for the full release history.
 
@@ -68,6 +68,7 @@ Bot traffic by category, action, protected app, and UA family, with a tenant-wid
 | Certificate expiration dashboard (green/amber/red/expired) | ✅ |
 | Origin pool inventory + detail UI | ✅ |
 | Per-origin per-site healthcheck matrix | ✅ |
+| Health check config on pools (protocol, path, thresholds, interval/timeout, expected codes) | ✅ |
 | Site cache (RE / CE / virtual) | ✅ |
 | Policy visibility — WAF, service, bot, API (shared + local with badges) | ✅ |
 | Reverse lookup: which LBs reference each policy | ✅ |

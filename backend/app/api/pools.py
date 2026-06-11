@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
 from app.db import get_db
-from app.models import OriginHealth, OriginPool, User
+from app.models import HealthCheck, OriginHealth, OriginPool, User
 from app.schemas.pool import (
+    HealthCheckConfig,
     OriginHealthCell,
     OriginPoolDetail,
     OriginPoolSummary,
@@ -182,6 +183,29 @@ def get_pool(
     ]
     site_names = sorted({r.site_name for r in health_rows})
 
+    # Resolve the pool's healthcheck_refs (names) to their synced config
+    # objects. Names match within the tenant; the pool's own namespace is
+    # tried first, then any namespace (e.g. shared healthchecks).
+    refs = pool.healthcheck_refs if isinstance(pool.healthcheck_refs, list) else []
+    healthchecks: list[HealthCheckConfig] = []
+    if refs:
+        hc_rows = db.execute(
+            select(HealthCheck).where(
+                HealthCheck.tenant_id == user.tenant_id,
+                HealthCheck.name.in_(refs),
+            )
+        ).scalars().all()
+        # Prefer a match in the pool's namespace when names collide across ns.
+        by_name: dict[str, HealthCheck] = {}
+        for hc in hc_rows:
+            if hc.name not in by_name or hc.namespace == pool.namespace:
+                by_name[hc.name] = hc
+        healthchecks = [
+            HealthCheckConfig.model_validate(by_name[name])
+            for name in refs
+            if name in by_name
+        ]
+
     return OriginPoolDetail(
         id=pool.id,
         namespace=pool.namespace,
@@ -197,6 +221,7 @@ def get_pool(
         origin_addresses=pool.origin_addresses,
         site_names=site_names,
         healthcheck_refs=pool.healthcheck_refs if isinstance(pool.healthcheck_refs, list) else None,
+        healthchecks=healthchecks,
         health_matrix=cells,
         raw_spec=pool.raw_spec,
     )

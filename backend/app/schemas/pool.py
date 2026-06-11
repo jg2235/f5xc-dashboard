@@ -40,11 +40,30 @@ class OriginPoolSummary(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class HealthCheckConfig(BaseModel):
+    """Parsed configuration of a health check object referenced by a pool."""
+    namespace: str
+    name: str
+    protocol: str                            # http | https | tcp | unknown
+    interval_seconds: int | None
+    timeout_seconds: int | None
+    healthy_threshold: int | None
+    unhealthy_threshold: int | None
+    jitter_percent: int | None
+    http_path: str | None
+    http_host_header: str | None
+    http_use_http2: bool | None
+    expected_status_codes: list[str] | None
+
+    model_config = {"from_attributes": True}
+
+
 class OriginPoolDetail(OriginPoolSummary):
     """Pool with full origin × site health matrix + raw spec."""
     origin_addresses: list[str]
     site_names: list[str]                   # union of all sites that have health rows
     healthcheck_refs: list[str] | None
+    healthchecks: list[HealthCheckConfig]   # resolved config for each ref (if synced)
     health_matrix: list[OriginHealthCell]
     raw_spec: dict[str, Any]
 

@@ -349,6 +349,78 @@ def extract_pool_fields(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _expected_status_codes(block: dict[str, Any], spec: dict[str, Any]) -> list[str] | None:
+    """Normalize expected status codes (ints, strings, or ranges) to list[str]."""
+    raw = block.get("expected_status_codes") or spec.get("expected_status_codes")
+    if not isinstance(raw, list):
+        return None
+    out = [str(c).strip() for c in raw if c is not None and str(c).strip()]
+    return out or None
+
+
+def extract_healthcheck_fields(item: dict[str, Any]) -> dict[str, Any]:
+    """Flatten an F5 XC healthcheck object into HealthCheck column shape.
+
+    The spec carries common timing/threshold fields plus a oneof health-check
+    block: ``http_health_check`` / ``https_health_check`` / ``tcp_health_check``.
+    """
+    spec = item.get("get_spec") or item.get("spec") or {}
+    namespace = item.get("namespace", "")
+    name = item.get("name", "")
+
+    protocol = "unknown"
+    http_path: str | None = None
+    host_header: str | None = None
+    use_http2: bool | None = None
+    expected: list[str] | None = None
+
+    http_block = None
+    if isinstance(spec.get("https_health_check"), dict):
+        protocol = "https"
+        http_block = spec["https_health_check"]
+    elif isinstance(spec.get("http_health_check"), dict):
+        protocol = "http"
+        http_block = spec["http_health_check"]
+    elif isinstance(spec.get("tcp_health_check"), dict):
+        protocol = "tcp"
+
+    if isinstance(http_block, dict):
+        http_path = http_block.get("path")
+        # host_header is an explicit string; use_origin_server_name is the
+        # alternative (oneof) where the origin server name is used instead.
+        hh = http_block.get("host_header")
+        if isinstance(hh, str) and hh:
+            host_header = hh
+        elif "use_origin_server_name" in http_block:
+            host_header = "(origin server name)"
+        uh2 = http_block.get("use_http2")
+        if isinstance(uh2, bool):
+            use_http2 = uh2
+        expected = _expected_status_codes(http_block, spec)
+
+    def _int(v: Any) -> int | None:
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+
+    return {
+        "namespace": namespace,
+        "name": name,
+        "protocol": protocol,
+        "interval_seconds": _int(spec.get("interval")),
+        "timeout_seconds": _int(spec.get("timeout")),
+        "healthy_threshold": _int(spec.get("healthy_threshold")),
+        "unhealthy_threshold": _int(spec.get("unhealthy_threshold")),
+        "jitter_percent": _int(spec.get("jitter_percent")),
+        "http_path": http_path,
+        "http_host_header": host_header,
+        "http_use_http2": use_http2,
+        "expected_status_codes": expected,
+        "raw_spec": spec,
+    }
+
+
 # ---------------------------------------------------------------------------
 # F5 XC's `spec.site_type` enum uses several values across tenant generations:
 #   modern: CUSTOMER_EDGE / REGIONAL_EDGE / INGRESS_GATEWAY / VIRTUAL_SITE

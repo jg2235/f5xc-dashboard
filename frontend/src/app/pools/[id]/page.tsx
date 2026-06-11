@@ -112,6 +112,70 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
           </CardBody>
         </Card>
 
+        {/* Health checks — assigned object name(s) + parsed configuration.
+            Mirrors F5 XC's origin pool → Health Checks panel. */}
+        {((p.healthcheck_refs?.length ?? 0) > 0 || p.healthchecks.length > 0) && (
+          <Card className="mt-6">
+            <CardHeader className="flex items-center justify-between">
+              <CardTitle>Health checks</CardTitle>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                {(p.healthcheck_refs?.length ?? p.healthchecks.length)} assigned
+              </span>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              {(p.healthcheck_refs ?? p.healthchecks.map((h) => h.name)).map((refName) => {
+                const hc = p.healthchecks.find((h) => h.name === refName);
+                return (
+                  <div
+                    key={refName}
+                    className="rounded border border-carbon-600 bg-carbon-800/40 p-4"
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="font-mono text-sm text-carbon-100">{refName}</span>
+                      {hc && (
+                        <>
+                          <span className="rounded border border-accent-cyan/40 bg-accent-cyan/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-accent-cyan">
+                            {hc.protocol}
+                          </span>
+                          <span className="font-mono text-[10px] text-carbon-300">
+                            [{hc.namespace}]
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {!hc ? (
+                      <div className="font-mono text-[10px] text-carbon-300">
+                        Config not synced yet — it will appear after the next sync cycle.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-3">
+                        <ConfigItem label="Interval" value={hc.interval_seconds !== null ? `${hc.interval_seconds}s` : "—"} />
+                        <ConfigItem label="Timeout" value={hc.timeout_seconds !== null ? `${hc.timeout_seconds}s` : "—"} />
+                        <ConfigItem label="Jitter" value={hc.jitter_percent !== null ? `${hc.jitter_percent}%` : "—"} />
+                        <ConfigItem label="Healthy threshold" value={hc.healthy_threshold ?? "—"} />
+                        <ConfigItem label="Unhealthy threshold" value={hc.unhealthy_threshold ?? "—"} />
+                        {hc.protocol !== "tcp" && (
+                          <>
+                            <ConfigItem label="HTTP/2" value={hc.http_use_http2 === null ? "—" : hc.http_use_http2 ? "yes" : "no"} />
+                            <ConfigItem label="Path" value={hc.http_path ?? "—"} />
+                            <ConfigItem label="Host header" value={hc.http_host_header ?? "—"} />
+                            <ConfigItem
+                              label="Expected codes"
+                              value={hc.expected_status_codes && hc.expected_status_codes.length > 0
+                                ? hc.expected_status_codes.join(", ")
+                                : "—"}
+                            />
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </CardBody>
+          </Card>
+        )}
+
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Origin servers</CardTitle>
@@ -127,27 +191,21 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
                 </div>
               ))}
             </div>
-            {p.healthcheck_refs && p.healthcheck_refs.length > 0 && (
-              <div className="mt-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
-                  Healthcheck refs
-                </div>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {p.healthcheck_refs.map((r) => (
-                    <span
-                      key={r}
-                      className="rounded border border-carbon-600 bg-carbon-800/50 px-2 py-0.5 font-mono text-[10px] text-carbon-100"
-                    >
-                      {r}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </CardBody>
         </Card>
       </div>
     </Shell>
+  );
+}
+
+function ConfigItem({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+        {label}
+      </div>
+      <div className="mt-0.5 break-all font-mono text-xs text-carbon-100">{value}</div>
+    </div>
   );
 }
 

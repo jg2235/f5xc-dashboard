@@ -17,6 +17,7 @@ from app.workers.tasks.sync_api_metrics import sync_api_metrics
 from app.workers.tasks.sync_bot_events import sync_bot_events
 from app.workers.tasks.sync_bot_metrics import sync_bot_metrics
 from app.workers.tasks.sync_certificates import sync_certificates
+from app.workers.tasks.sync_healthcheck_configs import sync_healthcheck_configs
 from app.workers.tasks.sync_healthchecks import sync_healthchecks
 from app.workers.tasks.sync_loadbalancers import sync_loadbalancers
 from app.workers.tasks.sync_origin_pools import sync_origin_pools
@@ -57,6 +58,11 @@ def trigger_policy_sync(_: User = Depends(require_admin)) -> dict:
 @router.post("/healthchecks", summary="Trigger healthcheck sync")
 def trigger_healthcheck_sync(_: User = Depends(require_admin)) -> dict:
     return {"status": "ok", "result": sync_healthchecks.apply().result}
+
+
+@router.post("/healthcheck-configs", summary="Trigger healthcheck config sync")
+def trigger_healthcheck_config_sync(_: User = Depends(require_admin)) -> dict:
+    return {"status": "ok", "result": sync_healthcheck_configs.apply().result}
 
 
 @router.post("/pool-re-health", summary="Trigger pool RE health sync")
@@ -117,6 +123,7 @@ _SYNC_STEPS = [
     ("load_balancers", "Load balancers", sync_loadbalancers),
     ("certificates", "Certificates", sync_certificates),
     ("origin_pools", "Origin pools", sync_origin_pools),
+    ("healthcheck_configs", "Health check configs", sync_healthcheck_configs),
     ("sites", "Sites", sync_sites),
     ("policies", "Policies", sync_policies),
     ("healthchecks", "Health checks", sync_healthchecks),
