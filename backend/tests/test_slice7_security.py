@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from app.api.loadbalancers import _risk_score, _severity
 from app.config import Settings
 from app.security.alerting import (
     AlertCandidate,
     get_enabled_rules,
 )
-from app.api.loadbalancers import _risk_score, _severity
 from app.security.correlator import AttackerAggregates, AttackerKey
 
 # ---------------- AttackerAggregates ----------------
