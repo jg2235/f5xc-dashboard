@@ -27,8 +27,33 @@ from app.schemas.loadbalancer import (
     LoadBalancerSummary,
 )
 from app.schemas.pool import OriginPoolSummary
+from app.schemas.security import MaliciousUserSummary
+from app.security.correlator import correlate_attackers
 
 router = APIRouter()
+
+
+def _risk_score(agg) -> int:
+    """Heuristic 0–100 risk from the blocking/challenge mix.
+
+    Weighted so active blocking dominates, then challenges, then monitor-only.
+    Saturates at 100; any blocked request floors the score into the high band.
+    """
+    raw = (
+        agg.waf_block * 12
+        + agg.bot_block * 12
+        + agg.bot_challenge * 6
+        + agg.waf_monitor * 2
+    )
+    return min(100, raw)
+
+
+def _severity(score: int) -> str:
+    if score >= 70:
+        return "high"
+    if score >= 30:
+        return "medium"
+    return "low"
 
 
 class AttachedPolicyRef(BaseModel):
@@ -178,6 +203,59 @@ def get_lb_policies(
             policy_id=policy_id,
         ))
     return out
+
+
+@router.get(
+    "/{lb_id}/malicious-users",
+    response_model=list[MaliciousUserSummary],
+    summary="Malicious source IPs scoped to this LB (WAF + Bot signals)",
+)
+def get_lb_malicious_users(
+    lb_id: uuid.UUID,
+    window_minutes: int = Query(default=1440, ge=5, le=10080),
+    limit: int = Query(default=50, ge=1, le=500),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[MaliciousUserSummary]:
+    """Per-LB "malicious users": source IPs blocked/challenged/monitored by this
+    LB's WAF or Bot defense within the window, ranked by derived risk score.
+    Mirrors F5 XC's Security Monitoring → Malicious Users tab."""
+    from datetime import timedelta
+
+    lb = db.get(LoadBalancer, lb_id)
+    if lb is None or lb.tenant_id != user.tenant_id:
+        raise HTTPException(status_code=404, detail="Load balancer not found")
+
+    aggregates = correlate_attackers(
+        db,
+        tenant_id=user.tenant_id,
+        window=timedelta(minutes=window_minutes),
+        lb_namespace=lb.namespace,
+        lb_name=lb.name,
+    )
+
+    rows: list[MaliciousUserSummary] = []
+    for (ip, asn, country), agg in aggregates.items():
+        score = _risk_score(agg)
+        rows.append(MaliciousUserSummary(
+            source_ip=ip,
+            source_asn=asn,
+            source_country=country,
+            waf_block_count=agg.waf_block,
+            waf_monitor_count=agg.waf_monitor,
+            bot_block_count=agg.bot_block,
+            bot_challenge_count=agg.bot_challenge,
+            total_events=agg.total,
+            top_endpoint=agg.top_endpoint,
+            top_signature=agg.top_signature,
+            risk_score=score,
+            severity=_severity(score),
+            first_seen_at=agg.first_seen,
+            last_seen_at=agg.last_seen,
+        ))
+
+    rows.sort(key=lambda r: (r.risk_score, r.total_events), reverse=True)
+    return rows[:limit]
 
 
 @router.get("/{lb_id}/raw", response_model=LoadBalancerOut, summary="LB full raw record")

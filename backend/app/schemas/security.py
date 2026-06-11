@@ -45,6 +45,29 @@ class AttackerProfileSummary(BaseModel):
     last_seen_at: datetime | None
 
 
+class MaliciousUserSummary(BaseModel):
+    """A malicious source IP scoped to a single load balancer (slice 8).
+
+    Built on the fly from waf_events + bot_events for one LB. `risk_score` and
+    `severity` are derived from the blocking/challenge mix (F5 XC's ML risk
+    score is not exposed via the API, so this is a dashboard-side heuristic).
+    """
+    source_ip: str
+    source_asn: int | None
+    source_country: str | None
+    waf_block_count: int
+    waf_monitor_count: int
+    bot_block_count: int
+    bot_challenge_count: int
+    total_events: int
+    top_endpoint: str | None
+    top_signature: str | None
+    risk_score: int          # 0–100 heuristic
+    severity: str            # high | medium | low
+    first_seen_at: datetime | None
+    last_seen_at: datetime | None
+
+
 class AttackerTimelineEntry(BaseModel):
     event_time: datetime
     signal: str            # waf | bot

@@ -93,11 +93,17 @@ def correlate_attackers(
     tenant_id: uuid.UUID,
     window: timedelta,
     max_attackers: int = 2000,
+    lb_namespace: str | None = None,
+    lb_name: str | None = None,
 ) -> dict[tuple[str, int | None, str | None], AttackerAggregates]:
     """Build per-attacker cross-signal aggregates within the window.
 
     Returns a dict keyed by (source_ip, source_asn, source_country). Caller
     is responsible for upserting into attacker_profiles.
+
+    When ``lb_namespace`` and ``lb_name`` are supplied, the scan is scoped to a
+    single load balancer — used by the per-LB "malicious users" view. (The API
+    4xx attribution is skipped in that mode since it isn't LB-attributable.)
 
     Performance note: scans waf_events + bot_events for the window. Both
     are hypertables with chunk pruning, so a 24h window scans ~24 chunks
@@ -107,21 +113,25 @@ def correlate_attackers(
     """
     end = datetime.now(UTC)
     start = end - window
+    scoped = lb_namespace is not None and lb_name is not None
 
     out: dict[tuple[str, int | None, str | None], AttackerAggregates] = {}
 
     # --- WAF events ---
+    waf_where = [
+        WafEvent.tenant_id == tenant_id,
+        WafEvent.event_time >= start,
+        WafEvent.event_time <= end,
+        WafEvent.source_ip.is_not(None),
+    ]
+    if scoped:
+        waf_where += [WafEvent.lb_namespace == lb_namespace, WafEvent.lb_name == lb_name]
     waf_rows: Iterable[Any] = db.execute(
         select(
             WafEvent.source_ip, WafEvent.source_asn, WafEvent.source_country,
             WafEvent.action, WafEvent.lb_namespace, WafEvent.lb_name,
             WafEvent.url, WafEvent.primary_signature, WafEvent.event_time,
-        ).where(
-            WafEvent.tenant_id == tenant_id,
-            WafEvent.event_time >= start,
-            WafEvent.event_time <= end,
-            WafEvent.source_ip.is_not(None),
-        )
+        ).where(*waf_where)
     ).all()
     for r in waf_rows:
         key = _key_from(r.source_ip, r.source_asn, r.source_country)
@@ -141,17 +151,20 @@ def correlate_attackers(
             )
 
     # --- Bot events ---
+    bot_where = [
+        BotEvent.tenant_id == tenant_id,
+        BotEvent.event_time >= start,
+        BotEvent.event_time <= end,
+        BotEvent.source_ip.is_not(None),
+    ]
+    if scoped:
+        bot_where += [BotEvent.lb_namespace == lb_namespace, BotEvent.lb_name == lb_name]
     bot_rows = db.execute(
         select(
             BotEvent.source_ip, BotEvent.source_asn, BotEvent.source_country,
             BotEvent.action, BotEvent.lb_namespace, BotEvent.lb_name,
             BotEvent.endpoint_path, BotEvent.event_time,
-        ).where(
-            BotEvent.tenant_id == tenant_id,
-            BotEvent.event_time >= start,
-            BotEvent.event_time <= end,
-            BotEvent.source_ip.is_not(None),
-        )
+        ).where(*bot_where)
     ).all()
     for r in bot_rows:
         key = _key_from(r.source_ip, r.source_asn, r.source_country)
@@ -173,7 +186,8 @@ def correlate_attackers(
     # Limitation: api_metrics_1min has no source_ip dimension. We approximate
     # by counting WAF events with response_code 4xx as the attacker's API errors.
     # This is a documented simplification, captured in the slice 7 changelog.
-    waf_4xx_rows = db.execute(
+    # Skipped in LB-scoped mode (per-LB malicious users don't surface this).
+    waf_4xx_rows = [] if scoped else db.execute(
         select(
             WafEvent.source_ip, WafEvent.source_asn, WafEvent.source_country,
             func.count().label("c"),

@@ -2,7 +2,7 @@
 
 A production-grade read-only SaaS dashboard for **F5 Distributed Cloud (XC)** that periodically pulls configuration and analytics via the XC REST API and surfaces them as visual dashboards.
 
-**Version**: 0.11.0 — API definition swagger/groups + per-LB API endpoints. See `CHANGELOG.md` for the full release history.
+**Version**: 0.12.0 — Per-LB malicious users + stepped sync progress. See `CHANGELOG.md` for the full release history.
 
 See `CHANGELOG.md` for the full release history.
 
@@ -76,6 +76,9 @@ Bot traffic by category, action, protected app, and UA family, with a tenant-wid
 | Bot analytics (dual source: BD Standard + BD-A, full taxonomy, per-endpoint breakdown) | ✅ |
 | API discovery & analytics (ML state, shadow detection, per-endpoint latency p50/p95/p99) | ✅ |
 | Security analytics — cross-signal attacker profiles, country choropleth, per-attacker timelines | ✅ |
+| Per-LB malicious users — WAF/Bot-scoped source IPs with derived risk score & severity | ✅ |
+| Per-LB API endpoints — inventory vs shadow, response-class & auth breakdown | ✅ |
+| Stepped "Sync now" progress via SSE (per-task progress bar) | ✅ |
 | Alert engine — 6 rules, in-dashboard inbox, ack/resolve workflow, dedup with occurrence count | ✅ |
 | Slack alerting | ⏳ deferred |
 | API schema drift detection | ⏳ deferred |

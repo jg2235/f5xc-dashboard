@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Activity,
   BarChart3,
@@ -18,7 +18,7 @@ import {
   Shield,
   ShieldCheck,
 } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api, auth } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
@@ -52,10 +52,73 @@ export function Sidebar() {
   const [policiesOpen, setPoliciesOpen] = useState<boolean>(policiesActive);
   const [analyticsOpen, setAnalyticsOpen] = useState<boolean>(analyticsActive);
 
-  const syncMut = useMutation({
-    mutationFn: () => api.triggerSyncAll(),
-    onSuccess: () => window.location.reload(),
-  });
+  // Stepped sync progress, driven by the SSE stream at /sync/all/stream.
+  // `done` is the number of completed steps; `total` the step count.
+  const [sync, setSync] = useState<{
+    active: boolean;
+    done: number;
+    total: number;
+    label: string;
+    error: string | null;
+  }>({ active: false, done: 0, total: 0, label: "", error: null });
+  const sourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    // Clean up the stream if the component unmounts mid-sync.
+    return () => sourceRef.current?.close();
+  }, []);
+
+  const startSync = () => {
+    if (sync.active) return;
+    setSync({ active: true, done: 0, total: 0, label: "Starting…", error: null });
+    const es = new EventSource("/api/v1/sync/all/stream", { withCredentials: true });
+    sourceRef.current = es;
+
+    es.onmessage = (ev) => {
+      let msg: {
+        type: string;
+        total?: number;
+        index?: number;
+        label?: string;
+        status?: string;
+        error?: string | null;
+      };
+      try {
+        msg = JSON.parse(ev.data);
+      } catch {
+        return;
+      }
+      if (msg.type === "start") {
+        setSync((s) => ({ ...s, total: msg.total ?? 0 }));
+      } else if (msg.type === "step") {
+        setSync((s) => ({ ...s, label: msg.label ?? "", total: msg.total ?? s.total }));
+      } else if (msg.type === "progress") {
+        setSync((s) => ({
+          ...s,
+          done: msg.index ?? s.done,
+          total: msg.total ?? s.total,
+          label: msg.label ?? s.label,
+          error: msg.status === "error" ? `${msg.label}: ${msg.error ?? "failed"}` : s.error,
+        }));
+      } else if (msg.type === "done") {
+        es.close();
+        sourceRef.current = null;
+        // Brief pause so the bar visibly reaches 100% before reload.
+        setSync((s) => ({ ...s, active: false, done: s.total, label: "Done" }));
+        setTimeout(() => window.location.reload(), 400);
+      }
+    };
+
+    es.onerror = () => {
+      es.close();
+      sourceRef.current = null;
+      setSync((s) => ({
+        ...s,
+        active: false,
+        error: s.error ?? "Sync connection lost — try again.",
+      }));
+    };
+  };
 
   const alertSummary = useQuery({
     queryKey: ["alert-summary-sidebar"],
@@ -230,17 +293,44 @@ export function Sidebar() {
 
       <div className="border-t border-carbon-700 p-3">
         <button
-          onClick={() => syncMut.mutate()}
-          disabled={syncMut.isPending}
-          className="mb-2 flex w-full items-center gap-2 rounded border border-carbon-600 bg-carbon-700/50 px-3 py-2 text-xs font-medium text-carbon-100 hover:border-accent-cyan/40 hover:bg-carbon-700 disabled:opacity-50"
+          onClick={startSync}
+          disabled={sync.active}
+          className="flex w-full items-center gap-2 rounded border border-carbon-600 bg-carbon-700/50 px-3 py-2 text-xs font-medium text-carbon-100 hover:border-accent-cyan/40 hover:bg-carbon-700 disabled:opacity-50"
         >
-          {syncMut.isPending ? (
+          {sync.active ? (
             <Loader2 size={14} className="animate-spin" />
           ) : (
             <RefreshCw size={14} />
           )}
           Sync now
         </button>
+        {/* Stepped progress — driven by the /sync/all/stream SSE feed. The bar
+            fills as each sync task completes; the label shows the current step. */}
+        {(sync.active || sync.done > 0) && (
+          <div className="mt-1.5 mb-2">
+            <div className="h-1 overflow-hidden rounded-full bg-carbon-700/60">
+              <div
+                className="h-full rounded-full bg-accent-cyan transition-[width] duration-300 ease-out"
+                style={{
+                  width: sync.total > 0 ? `${(sync.done / sync.total) * 100}%` : "0%",
+                }}
+              />
+            </div>
+            <div className="mt-1 flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-carbon-300">
+              <span className="truncate pr-2">{sync.label}</span>
+              {sync.total > 0 && (
+                <span className="tabular-nums text-carbon-200">
+                  {sync.done}/{sync.total}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+        {sync.error && (
+          <div className="mb-2 px-1 font-mono text-[10px] text-accent-red">
+            {sync.error}
+          </div>
+        )}
         <button
           onClick={logout}
           className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs font-medium text-carbon-200 hover:text-accent-red"

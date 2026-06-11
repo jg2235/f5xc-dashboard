@@ -14,9 +14,43 @@ from app.security.alerting import (
     AlertCandidate,
     get_enabled_rules,
 )
+from app.api.loadbalancers import _risk_score, _severity
 from app.security.correlator import AttackerAggregates, AttackerKey
 
 # ---------------- AttackerAggregates ----------------
+
+
+# ---------------- Malicious-user risk heuristic (slice 8) ----------------
+
+
+def test_risk_score_blocking_dominates_and_saturates() -> None:
+    a = AttackerAggregates()
+    a.waf_block = 10  # 10*12 = 120 → clamps to 100
+    assert _risk_score(a) == 100
+    assert _severity(_risk_score(a)) == "high"
+
+
+def test_risk_score_challenge_is_medium() -> None:
+    a = AttackerAggregates()
+    a.bot_challenge = 6  # 6*6 = 36 → medium band
+    score = _risk_score(a)
+    assert score == 36
+    assert _severity(score) == "medium"
+
+
+def test_risk_score_monitor_only_is_low() -> None:
+    a = AttackerAggregates()
+    a.waf_monitor = 3  # 3*2 = 6 → low band
+    score = _risk_score(a)
+    assert score == 6
+    assert _severity(score) == "low"
+
+
+def test_severity_band_boundaries() -> None:
+    assert _severity(70) == "high"
+    assert _severity(69) == "medium"
+    assert _severity(30) == "medium"
+    assert _severity(29) == "low"
 
 
 def test_attacker_aggregates_total_calc() -> None:

@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.12.0 — Per-LB malicious users + stepped sync progress (2026-06-11)
+
+### Malicious users per load balancer
+
+The LB detail page gains a **Malicious users — last 24h** section (under
+WAF/Bot), mirroring F5 XC's Security Monitoring → Malicious Users tab. It lists
+source IPs blocked/challenged/monitored by that LB's WAF or Bot defense within
+the window, ranked by a derived risk score.
+
+- **`correlate_attackers` gains optional `lb_namespace`/`lb_name` filters** so
+  the existing cross-signal correlator can be scoped to a single LB (API-4xx
+  attribution is skipped in scoped mode since it isn't LB-attributable).
+- **New `GET /api/v1/loadbalancers/{lb_id}/malicious-users`** returns
+  `MaliciousUserSummary` rows (source IP, ASN, country, WAF/Bot signal counts,
+  total events, top endpoint/signature, last seen) with a heuristic
+  `risk_score` (0–100) and `severity` (high/medium/low) derived from the
+  blocking/challenge mix — F5 XC's ML risk score is not exposed via the API.
+- Rows link to the existing per-attacker timeline drill-down. Section is gated
+  on the LB having WAF or Bot defense active.
+
+### Stepped "Sync now" progress
+
+- **New `GET /api/v1/sync/all/stream`** runs every sync task in dependency
+  order and streams per-step progress as Server-Sent Events
+  (`start` → `step`/`progress` per task → `done`). The step list is shared with
+  the blocking `POST /sync/all` so they never drift.
+- The sidebar **Sync now** button now consumes the stream via `EventSource`
+  and shows a determinate progress bar that fills as each task completes, with
+  the current step label and `done/total` count.
+
 ## v0.11.0 — API definition swagger/groups + per-LB API endpoints (2026-06-10)
 
 ### API Definition parsing — real F5 XC spec shape

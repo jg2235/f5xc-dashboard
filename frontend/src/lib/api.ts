@@ -536,6 +536,23 @@ export type AttackerProfileSummary = {
   last_seen_at: string | null;
 };
 
+export type MaliciousUserSummary = {
+  source_ip: string;
+  source_asn: number | null;
+  source_country: string | null;
+  waf_block_count: number;
+  waf_monitor_count: number;
+  bot_block_count: number;
+  bot_challenge_count: number;
+  total_events: number;
+  top_endpoint: string | null;
+  top_signature: string | null;
+  risk_score: number;
+  severity: string; // high | medium | low
+  first_seen_at: string | null;
+  last_seen_at: string | null;
+};
+
 export type AttackerTimelineEntry = {
   event_time: string;
   signal: "waf" | "bot" | string;
@@ -707,6 +724,10 @@ export const api = {
   lbStats: () => request<LoadBalancerStats>("/loadbalancers/stats"),
   getLoadBalancer: (id: string) => request<LoadBalancerDetail>(`/loadbalancers/${id}`),
   getLoadBalancerPolicies: (id: string) => request<AttachedPolicyRef[]>(`/loadbalancers/${id}/policies`),
+  getLoadBalancerMaliciousUsers: (id: string, windowMinutes = 1440) =>
+    request<MaliciousUserSummary[]>(
+      `/loadbalancers/${id}/malicious-users?window_minutes=${windowMinutes}`,
+    ),
 
   // Certificates
   listCertificates: (status?: CertStatus) =>

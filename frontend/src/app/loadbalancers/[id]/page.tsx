@@ -67,6 +67,12 @@ export default function LBDetailPage({ params }: { params: Promise<{ id: string 
     enabled: ready,
     refetchInterval: 60_000,
   });
+  const maliciousUsers = useQuery({
+    queryKey: ["lb-malicious-users", id],
+    queryFn: () => api.getLoadBalancerMaliciousUsers(id, 1440),
+    enabled: ready,
+    refetchInterval: 60_000,
+  });
 
   // Linked API definitions — fetch detail (swagger files + groups) for each
   // attached api_definition that has been synced (has a policy_id).
@@ -510,6 +516,114 @@ export default function LBDetailPage({ params }: { params: Promise<{ id: string 
             </CardBody>
           </Card>
         )}
+
+        {/* Malicious users (slice 8) — source IPs blocked/challenged by this
+            LB's WAF or Bot defense. Mirrors F5 XC's Security Monitoring →
+            Malicious Users tab. Only shown when WAF or Bot is active. */}
+        {(x.has_waf || x.has_bot_defense) && (() => {
+          const users = maliciousUsers.data ?? [];
+          const sevTone: Record<string, string> = {
+            high: "border-accent-red/40 bg-accent-red/10 text-accent-red",
+            medium: "border-accent-amber/40 bg-accent-amber/10 text-accent-amber",
+            low: "border-carbon-500/40 bg-carbon-700/40 text-carbon-200",
+          };
+          return (
+            <Card className="mt-6">
+              <CardHeader className="flex items-center justify-between">
+                <CardTitle>Malicious users — last 24h</CardTitle>
+                <Link
+                  href="/analytics/security"
+                  className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest text-accent-cyan hover:underline"
+                >
+                  Tenant analytics <ArrowUpRight size={11} />
+                </Link>
+              </CardHeader>
+              <CardBody className="!p-0">
+                {maliciousUsers.isLoading ? (
+                  <div className="p-6 text-center text-xs text-carbon-300">Loading…</div>
+                ) : users.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-carbon-300">
+                    No malicious users detected on this load balancer in the last 24h.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="border-b border-carbon-600 text-left font-mono text-[10px] uppercase tracking-widest text-carbon-300">
+                          <th className="px-4 py-2 font-medium">Source IP</th>
+                          <th className="px-4 py-2 font-medium">Severity</th>
+                          <th className="px-4 py-2 font-medium">Risk</th>
+                          <th className="px-4 py-2 font-medium">Country</th>
+                          <th className="px-4 py-2 font-medium">ASN</th>
+                          <th className="px-4 py-2 font-medium">WAF blk</th>
+                          <th className="px-4 py-2 font-medium">Bot blk</th>
+                          <th className="px-4 py-2 font-medium">Chal</th>
+                          <th className="px-4 py-2 font-medium">Events</th>
+                          <th className="px-4 py-2 font-medium">Last seen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((u) => (
+                          <tr
+                            key={u.source_ip}
+                            className="border-b border-carbon-700/50 hover:bg-carbon-700/40"
+                          >
+                            <td className="px-4 py-1.5">
+                              <Link
+                                href={`/analytics/security/attackers/${encodeURIComponent(u.source_ip)}`}
+                                className="font-mono text-xs text-carbon-100 hover:text-accent-cyan"
+                              >
+                                {u.source_ip}
+                              </Link>
+                            </td>
+                            <td className="px-4 py-1.5">
+                              <span
+                                className={`inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${
+                                  sevTone[u.severity] ?? sevTone.low
+                                }`}
+                              >
+                                {u.severity}
+                              </span>
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] tabular-nums text-carbon-100">
+                              {u.risk_score}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] text-carbon-200">
+                              {u.source_country ?? "—"}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] text-carbon-200">
+                              {u.source_asn !== null ? `AS${u.source_asn}` : "—"}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] tabular-nums text-accent-red">
+                              {u.waf_block_count.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] tabular-nums text-accent-red">
+                              {u.bot_block_count.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] tabular-nums text-accent-amber">
+                              {u.bot_challenge_count.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-1.5 font-mono text-[11px] tabular-nums text-carbon-100">
+                              {u.total_events.toLocaleString()}
+                            </td>
+                            <td
+                              className="px-4 py-1.5 font-mono text-[10px] text-carbon-300"
+                              title={u.last_seen_at ? format(new Date(u.last_seen_at), "PPpp") : ""}
+                            >
+                              {u.last_seen_at
+                                ? formatDistanceToNow(new Date(u.last_seen_at), { addSuffix: true })
+                                : "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          );
+        })()}
 
 
         {/* Linked API definitions — swagger spec files + group operations */}
